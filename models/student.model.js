@@ -9,7 +9,11 @@ const studentSchema = mongoose.Schema({
     name: String,
     email: String, 
     password: String, 
-    image: {type: String, default: 'default-student-image.png'}
+    image: {type: String, default: 'default-student-image.png'},
+    enrolledCourses: {
+        type: [{id: String, name: String}],
+        default: []
+    }
 }); 
 
 const Student = mongoose.model('student', studentSchema); 

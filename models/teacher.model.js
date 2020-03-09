@@ -9,7 +9,11 @@ const teacherSchema = mongoose.Schema({
     name: String,
     email: String, 
     password: String, 
-    image: {type: String, default: 'default-teacher-image.png'}
+    image: {type: String, default: 'default-teacher-image.png'},
+    createdClasses: {
+        type: [{id: String, name: String}],
+        default: []
+    }
 }); 
 
 const Teacher = mongoose.model('teacher', teacherSchema); 
