@@ -10,8 +10,8 @@ const teacherSchema = mongoose.Schema({
     email: String, 
     password: String, 
     image: {type: String, default: 'default-teacher-image.png'},
-    createdClasses: {
-        type: [{id: String, name: String}],
+    createdCourses: {
+        type: [{id: String, name: String, courseCode: String}],
         default: []
     }
 }); 

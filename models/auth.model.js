@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const fileManager = require('file-manager-js');
 
 mongoose.Promise = global.Promise;
 
@@ -99,7 +100,14 @@ exports.createNewTeacher = (name, email, password) => {
                     password: hashedPassword
                 })
                 return teacher.save();
-            }).then(() => {
+            }).then(teacher => {
+                fileManager.createDir('./teachers/'+teacher._id)
+                    .then(() => {
+                        resolve()
+                    })
+                    .catch(() => reject());
+            })
+            .then(() => {
                 mongoose.disconnect();
                 resolve();
             }).catch(err => {
