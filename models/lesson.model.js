@@ -21,4 +21,19 @@ const lessonSchema = mongoose.Schema({
 const Lesson = mongoose.model('lesson', lessonSchema);
 exports.Lesson = Lesson;
 
-
+exports.getLessonById = async id => {
+    try {
+        await mongoose.connect(DB_URL)
+        let lesson = await Lesson.findById(id);
+        if(lesson){
+            mongoose.disconnect();
+            return lesson;
+        }
+        else{
+            throw new Error("No Message with this ID");
+        }
+    } catch (error) {
+        mongoose.disconnect();
+        throw new Error(error);
+    }
+}

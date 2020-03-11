@@ -15,6 +15,7 @@
     "file-manager-js": "^3.1.6",
     "mongodb": "^3.5.4",
     "mongoose": "^5.9.3",
-    "randomstring": "^1.1.5"
+    "randomstring": "^1.1.5",
+    "socket.io": "^2.3.0"
   }
 }

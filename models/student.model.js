@@ -11,7 +11,7 @@ const studentSchema = mongoose.Schema({
     password: String, 
     image: {type: String, default: 'default-student-image.png'},
     enrolledCourses: {
-        type: [{id: String, name: String}],
+        type: [{id: String, name: String, teacherName: String}],
         default: []
     }
 }); 

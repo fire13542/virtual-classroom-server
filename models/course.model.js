@@ -10,6 +10,11 @@ const courseSchema = mongoose.Schema({
     name: String,
     courseCode: String,
     teacherId: String,
+    teacherName: String,
+    members: {
+        type: [{id: String, name: String}],
+        default: []
+    },
     lessons: {
         type: [{id: String, name: String}],
         default: []
@@ -28,7 +33,24 @@ const Course = mongoose.model('course', courseSchema);
 exports.Course = Course;
 
 const Teacher = require('./teacher.model').Teacher;
+const Student = require('./student.model').Student;
 
+exports.getCourseById = async id => {
+    try {
+        await mongoose.connect(DB_URL)
+        let course = await Course.findById(id);
+        if(course){
+            mongoose.disconnect();
+            return course;
+        }
+        else{
+            throw new Error("No Course with this ID");
+        }
+    } catch (error) {
+        mongoose.disconnect();
+        throw new Error(error);
+    }
+}
 
 exports.createNewCourse = async (teacherId, courseName) => {
     let courseCode = '';
