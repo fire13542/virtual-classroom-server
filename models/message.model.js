@@ -35,14 +35,18 @@ exports.getMessageById = async id => {
 exports.getMessagesBetweenSenderAndReciever = async (sender, reciever) => {
     try {
         await mongoose.connect(DB_URL);
-        let messages = Message.find({sender: sender, reciver: reciever});
-        if(messages) {
-            mongoose.disconnect();
-            return messages;
-        }
-        else {
-            throw new Error("No Message found");
-        }
+        let messages = await Message.find({$or: [
+            {sender: sender, reciver: reciever},
+            {sender: reciever, reciever: sender}
+        ]},
+        null, 
+        {
+            $sort: {
+                timestamp: 1
+            }
+        });
+        mongoose.disconnect();
+        return messages;
     } catch (error) {
         mongoose.disconnect();
         throw new Error(error);
@@ -53,13 +57,10 @@ exports.getMessagesBetweenSenderAndReciever = async (sender, reciever) => {
 exports.sendMessage = async messageData => {
     try {
         await mongoose.connect(DB_URL);
-        let message = new Message({
-            content: messageData.content, 
-            sender: messageData.sender, 
-            reciever: messageData.reciever,
-            timestamp: messageData.timestamp
-        });
+        let message = new Message(messageData);
         await message.save();
+        mongoose/disconnect();
+        return;
     } catch (error) {
         mongoose.disconnect();
         throw new Error(error);

@@ -12,12 +12,15 @@ const app = express();
 const server = require('http').createServer(app);
 const io = require('socket.io')(server);
 
-io.on('connection', socket => {
-    console.log('new');
-    socket.on('a', () => {
-        socket.emit('b');
-    })
-})
+io.onlineTeachers = {};
+io.onlineStudents = {};
+
+// io.on('connection', socket => {
+//     console.log('new');
+//     socket.on('a', () => {
+//         socket.emit('b');
+//     })
+// })
 
 app.use(express.static(path.join(__dirname, 'assets')));
 app.use(express.static(path.join(__dirname, 'images')));
