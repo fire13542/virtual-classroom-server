@@ -41,7 +41,7 @@ exports.getMessagesBetweenSenderAndReciever = async (sender, reciever) => {
         ]},
         null, 
         {
-            $sort: {
+            sort: {
                 timestamp: 1
             }
         });

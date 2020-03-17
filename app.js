@@ -5,6 +5,7 @@ const path = require('path');
 const authRouter = require('./routes/auth.route');
 const studentRouter = require('./routes/student.route');
 const teacherRouter = require('./routes/teacher.route');
+const lessonRouter = require('./routes/lesson.route');
 
 
 const app = express();
@@ -24,6 +25,7 @@ io.onlineStudents = {};
 
 app.use(express.static(path.join(__dirname, 'assets')));
 app.use(express.static(path.join(__dirname, 'images')));
+app.use(express.static(path.join(__dirname, 'teachers')))
 
 
 // app.get('/', (req, res, next) => {
@@ -32,6 +34,7 @@ app.use(express.static(path.join(__dirname, 'images')));
 app.use('/', authRouter);
 app.use('/student', studentRouter);
 app.use('/teacher', teacherRouter);
+app.use('/lesson', lessonRouter);
 
 const port = process.env.PORT || 3000;
 

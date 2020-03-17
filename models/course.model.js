@@ -9,6 +9,7 @@ const DB_URL = 'mongodb://localhost:27017/virtual-classroom';
 const courseSchema = mongoose.Schema({
     name: String,
     courseCode: String,
+    image: {type: String, default: 'default-course-image.jpg'},
     teacherId: String,
     teacherName: String,
     members: {
@@ -88,7 +89,6 @@ exports.createNewCourse = async (teacherId, courseName) => {
         mongoose.disconnect();
         await fileManager.createDir('./teachers/' + teacherId + '/' + courseName);
         return teacher;
-
     } catch (error) {
         mongoose.disconnect();
         throw new Error(error).message;
@@ -96,3 +96,16 @@ exports.createNewCourse = async (teacherId, courseName) => {
 }
 
 
+exports.courseImage = async (courseId, image) => {
+    try {
+        await mongoose.connect(DB_URL);
+        Course.findByIdAndUpdate(courseId, {
+            image: image
+        });
+        mongoose.disconnect();
+        return;
+    } catch (error) {
+        mongoose.disconnect();
+        throw new Error(error);
+    }
+}

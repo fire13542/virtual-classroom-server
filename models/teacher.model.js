@@ -82,3 +82,18 @@ exports.deleteTeacher = (id) => {
             });
     });
 }
+
+exports.changeImage = async (teacherId, image) => {
+    try {
+        await mongoose.connect(DB_URL);
+        await Teacher.findByIdAndUpdate(teacherId, {
+            image: image
+        });
+        mongoose.disconnect();
+        return;
+    } catch (error) {
+        mongoose.disconnect();
+        throw new Error(error);
+    }
+}
+

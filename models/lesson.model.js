@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const fileManager = require('file-manager-js');
 
 mongoose.Promise = global.Promise;
 
@@ -30,10 +31,79 @@ exports.getLessonById = async id => {
             return lesson;
         }
         else{
-            throw new Error("No Message with this ID");
+            throw "No Lesson with this ID";
         }
     } catch (error) {
         mongoose.disconnect();
         throw new Error(error);
     }
 }
+
+exports.addLink = async (lessonId, link) => {
+    try {
+        await mongoose.connect(DB_URL);
+        await Lesson.findByIdAndUpdate(lessonId, {
+            $push: {
+                links: link
+            }
+        });
+        mongoose.disconnect();
+        return;
+    } catch (error) {
+        mongoose.disconnect();
+        throw new Error(error);
+    }
+}
+
+exports.removeLink = async (lessonId, link) => {
+    try {
+        await mongoose.connect(DB_URL);
+        await Lesson.findByIdAndUpdate(lessonId, {
+            $pull: {
+                links: link
+            }
+        });
+        mongoose.disconnect();
+        return;
+    } catch (error) {
+        mongoose.disconnect();
+        throw new Error(error);
+    }
+}
+
+exports.uploadFile = async (lessonId, filename) => {
+    try {
+        await mongoose.connect(DB_URL);
+        await Lesson.findByIdAndUpdate(lessonId, {
+            $push: {
+                files: filename
+            }
+        });
+        mongoose.disconnect();
+        return;
+    } catch (error) {
+        mongoose.disconnect();
+        throw new Error(error);
+    }
+}
+
+exports.removeFile = async (lessonData, filename) => {
+    try {
+        await mongoose.connect(DB_URL);
+        await Lesson.findByIdAndUpdate(lessonData.lessonId, {
+            $push: {
+                files: filename
+            }
+        });
+
+        await fileManager.removeFile('./teachers/'+lessonData.teacherId+'/'+lessonData.courseName+'/'
+                                        +lessonData.lessonName+'/'+filename)
+
+        mongoose.disconnect();
+        return;
+    } catch (error) {
+        mongoose.disconnect();
+        throw new Error(error);
+    }
+}
+

@@ -16,3 +16,19 @@ exports.createNewCourse = (req, res, next) => {
             })
         })
 }
+
+exports.courseImage = (req, res, next) => {
+    courseModel
+        .courseImage(req.body.courseId, req.file.filename)
+        .then(() => {
+            res.json({
+                imageChanged: true
+            })
+        })
+        .catch(err => {
+            res.json({
+                error: true,
+                errMsg: err
+            })
+        })
+}

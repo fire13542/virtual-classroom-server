@@ -81,3 +81,18 @@ exports.deleteStudent = (id) => {
             });
     });
 }
+
+exports.changeImage = async (studentId, image) => {
+    try {
+        await mongoose.connect(DB_URL);
+        await Student.findByIdAndUpdate(studentId, {
+            image: image
+        });
+        mongoose.disconnect();
+        return;
+    } catch (error) {
+        mongoose.disconnect();
+        throw new Error(error);
+    }
+}
+

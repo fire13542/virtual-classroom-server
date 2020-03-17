@@ -28,3 +28,18 @@ exports.deleteTeacher = (req, res, next) => {
             );
 }
 
+exports.changeImage = (req, res, next) => {
+    studentModel
+        .changeImage(req.body.teacherId, req.file.filename)
+        .then(() => {
+            res.json({
+                imageChanged: true
+            })
+        })
+        .catch(err => {
+            res.json({
+                error: true,
+                errMsg: err
+            })
+        })
+}
