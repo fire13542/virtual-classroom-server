@@ -1,5 +1,6 @@
 const express = require('express');
 const path = require('path');
+const cors = require('cors');
 
 
 const authRouter = require('./routes/auth.route');
@@ -9,6 +10,8 @@ const lessonRouter = require('./routes/lesson.route');
 
 
 const app = express();
+
+app.use(cors());
 
 const server = require('http').createServer(app);
 const io = require('socket.io')(server);

@@ -1,5 +1,6 @@
 const router = require('express').Router();
 const bodyParser = require('body-parser');
+const multer = require('multer');
 
 const studentController = require('../controllers/student.controller');
 
