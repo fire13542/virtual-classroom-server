@@ -3,9 +3,10 @@ const studentModel = require('../models/student.model');
 
 exports.updateStudent = (req, res, next) => {
     studentModel
-            .updateStudent(req.body.id, req.body.name, req.body.password)
-            .then(() => res.json({
-                update: true
+            .updateStudent(req.body.id, req.body.name, req.body.email)
+            .then(student => res.json({
+                update: true,
+                student: student
                 })
             )
             .catch(err => res.json({
@@ -33,12 +34,29 @@ exports.changeImage = (req, res, next) => {
         .changeImage(req.body.studentId, req.file.filename)
         .then(() => {
             res.json({
-                imageChanged: true
+                imageChanged: true,
+                imageName: req.file.filename
             })
         })
         .catch(err => {
             res.json({
-                error: true,
+                imageChanged: false,
+                errMsg: err
+            })
+        })
+}
+
+exports.changePassword = (req, res, next) => {
+    studentModel
+        .changePassword(req.body.email, req.body.newPassword)
+        .then(() => {
+            res.json({
+                passwordChanged: true
+            })
+        })
+        .catch(err => {
+            res.json({
+                passwordChanged: false,
                 errMsg: err
             })
         })

@@ -9,6 +9,7 @@ const DB_URL = 'mongodb://localhost:27017/virtual-classroom';
 
 const Student = require('./student.model').Student;
 const Teacher = require('./teacher.model').Teacher;
+const Admin = require('./admin.model').Admin;
 
 
 exports.createNewStudent = (name, email, password) => {
@@ -150,3 +151,70 @@ exports.teacherLogin = (email, password) => {
         })
 };
 
+
+exports.adminLogin = (adminName, password) => {
+    return new Promise((resolve, reject) => {
+        mongoose
+            .connect(DB_URL)
+            .then(() => {
+                return Admin.findOne({adminName: adminName});
+            })
+            .then(admin => {
+                if(!admin) {
+                    mongoose.disconnect();
+                    reject('you are not admin');
+                }
+                else {
+                    bcrypt
+                        .compare(password, admin.password)
+                        .then(same => {
+                            if(!same){
+                                mongoose.disconnect();
+                                reject('you are not admin')
+                            } else {
+                                mongoose.disconnect();
+                                resolve(admin);
+                            }
+                        })
+                }
+            }).catch(err => {
+                mongoose.disconnect();
+                reject(err);
+            })
+    })
+}
+
+exports.adminSignup = (adminName, password) => {
+    return new Promise((resolve, reject) => {
+        mongoose
+        .connect(DB_URL)
+        .then(() => {
+            let admin = new Admin({
+                adminName, password
+            })
+            return admin.save();
+        })
+        .then(admin => {
+            resolve(admin);
+        })
+        .catch(err => {
+            reject(admin);
+        })
+    })
+}
+
+exports.checkIfEamilExisted = async (character, email) => {
+    await mongoose.connect();
+    if(character === 'student'){
+        let student = await Student.findOne({email: email});
+        mongoose.disconnect();
+        if(student) return true;
+        else return false;
+    }
+    if(character === 'teacher'){
+        let teacher = await Teacher.findOne({email: email});
+        mongoose.disconnect();
+        if(teacher) return true;
+        else return false;
+    }
+}

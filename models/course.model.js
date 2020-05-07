@@ -9,7 +9,7 @@ const DB_URL = 'mongodb://localhost:27017/virtual-classroom';
 const courseSchema = mongoose.Schema({
     name: String,
     courseCode: String,
-    image: {type: String, default: 'default-course-image.jpg'},
+    image: {type: String, default: 'default-course-image.png'},
     teacherId: String,
     teacherName: String,
     members: {
@@ -81,7 +81,8 @@ exports.createNewCourse = async (teacherId, courseName) => {
         let teacher = await Teacher.findByIdAndUpdate(teacherId, {$push: {createdCourses: {
                                                         id: course._id, 
                                                         name: course.name, 
-                                                        courseCode: course.courseCode
+                                                        courseCode: course.courseCode,
+                                                        image: course.image
                                                     }}},
                                                     {new: true}
                                                     )
@@ -92,6 +93,24 @@ exports.createNewCourse = async (teacherId, courseName) => {
     } catch (error) {
         mongoose.disconnect();
         throw new Error(error).message;
+    }
+}
+
+exports.deleteCourse = async (teacherId, courseData) => {
+    try {
+        await fileManager.removeDir('./teachers/'+teacherId+'/'+courseData.name);
+        await mongoose.connect(DB_URL);
+        let teacher = await Teacher.findByIdAndUpdate(teacherId, {
+            $pull: {createdCourses: {id: courseData.id} }
+        },
+        {new: true});
+        await Course.findByIdAndDelete(courseData.id);
+        mongoose.disconnect()
+        return teacher;
+    } catch (error) {
+        mongoose.disconnect();
+        console.log(error)
+        throw new Error(error);
     }
 }
 

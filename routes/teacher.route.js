@@ -20,12 +20,12 @@ router.post('/course/create',
             bodyParser.json(),
             courseController.createNewCourse)
 
-            router.post('/image', 
+router.post('/image', 
             bodyParser.urlencoded({extended: true}),
             multer({
                 storage: multer.diskStorage({
                     destination: (req, file, cb) => {
-                        cb(null, "images/");
+                        cb(null, "images/teachers-images/");
                     },
                     filename: (req, file, cb) => {
                         cb(null, Date.now() + "-" + file.originalname);
@@ -34,5 +34,8 @@ router.post('/course/create',
             }).single("avatar"),
             studentController.changeImage)
 
+router.put('/change-password', 
+            bodyParser.json(),
+            teacherController.changePassword)
 
 module.exports = router;

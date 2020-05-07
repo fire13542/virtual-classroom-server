@@ -2,7 +2,18 @@ const router = require('express').Router();
 const bodyParser = require('body-parser');
 const multer = require('multer');
 
+const authController = require('../controllers/auth.controller');
 const courseCountroller = require('../controllers/course.controller');
+
+router.post('/new', 
+            authController.verifyToken,
+            bodyParser.json(),
+            courseCountroller.createNewCourse);
+
+router.delete('/delete', 
+                authController.verifyToken,
+                bodyParser.json(),
+                courseCountroller.deleteCourse);
 
 router.post('/image', 
             bodyParser.urlencoded({extended: true}),
@@ -18,5 +29,6 @@ router.post('/image',
             }).single("avatar"),
             courseCountroller.courseImage)
 
+router.get('/carousel', courseCountroller.getCarouselImages)
 
 module.exports = router;

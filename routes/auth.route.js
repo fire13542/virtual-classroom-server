@@ -12,7 +12,11 @@ router.post('/signup',
 
 router.post('/login', 
             bodyParser.json(),
-            authController.postLogin)
+            authController.postLogin);
+
+router.post('/reset-password', 
+            bodyParser.json(),
+            authController.resetPassword);
 
 
 

@@ -1,12 +1,13 @@
 const courseModel = require('../models/course.model');
-
+const fileManager = require('file-manager-js');
 
 exports.createNewCourse = (req, res, next) => {
     courseModel
         .createNewCourse(req.body.teacherId, req.body.courseName)
-        .then(() => {
+        .then(teacher => {
             res.json({
-                courseCreated: true
+                courseCreated: true,
+                teacher: teacher
             })
         })
         .catch(err => {
@@ -15,6 +16,22 @@ exports.createNewCourse = (req, res, next) => {
                 errMsg: err
             })
         })
+}
+
+exports.deleteCourse = (req, res, next) => {
+    courseModel.deleteCourse(req.body.teacherId, req.body.courseData)
+    .then(teacher => {
+        res.json({
+            courseDeleted: true,
+            teacher: teacher
+        })
+    })
+    .catch(err => {
+        res.json({
+            courseDeleted: false,
+            errMsg: err
+        })
+    })
 }
 
 exports.courseImage = (req, res, next) => {
@@ -31,4 +48,18 @@ exports.courseImage = (req, res, next) => {
                 errMsg: err
             })
         })
+}
+
+exports.getCarouselImages = (req, res, next) => {
+    fileManager.list('images/courses-images/carousel')
+    .then(entries => {
+        res.json({
+            images: entries.files.map(file => file.slice(31))
+        })
+    })
+    .catch(err => {
+        res.json({
+            error: err
+        })
+    })
 }

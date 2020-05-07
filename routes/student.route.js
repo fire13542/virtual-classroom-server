@@ -20,7 +20,7 @@ router.post('/image',
                 multer({
                     storage: multer.diskStorage({
                         destination: (req, file, cb) => {
-                            cb(null, "teachers/"+req.body.teacherId+"/");
+                            cb(null, "images/students-images/");
                         },
                         filename: (req, file, cb) => {
                             cb(null, Date.now() + "-" + file.originalname);
@@ -29,6 +29,8 @@ router.post('/image',
                 }).single("avatar"),
                 studentController.changeImage)
 
-
+router.put('/change-password', 
+            bodyParser.json(),
+            studentController.changePassword)
 
 module.exports = router;

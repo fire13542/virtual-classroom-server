@@ -11,7 +11,7 @@ const teacherSchema = mongoose.Schema({
     password: String, 
     image: {type: String, default: 'default-teacher-image.png'},
     createdCourses: {
-        type: [{id: String, name: String, courseCode: String}],
+        type: [{id: String, name: String, courseCode: String, image: String}],
         default: []
     }
 }); 
@@ -37,24 +37,20 @@ exports.getTeacherData = id => {
     });
 }; 
 
-exports.updateTeacher = (id, name, password, image) => {
+exports.updateTeacher = (id, name, email) => {
     return new Promise((resolve, reject) => {
         mongoose
         .connect(DB_URL, {useNewUrlParser: true, useUnifiedTopology: true})
         .then(() => {
-            return bcrypt.hash(password, 10);
-        })
-        .then(hashedPassword => {
-            console.log('a')
             return Teacher.findByIdAndUpdate(id, {
                 name: name, 
-                password: hashedPassword
+                email: email
             })
         })
         .then(teacher => {
             if(teacher){
                 mongoose.disconnect();
-                resolve();
+                resolve(teacher);
             }
             else {reject('there is no teacher match this id')}
         })
@@ -97,3 +93,17 @@ exports.changeImage = async (teacherId, image) => {
     }
 }
 
+exports.changePassword = async (email, newPassword) => {
+    try {
+        newHashedPassword = await bcrypt.hash(newPassword, 10);
+        await mongoose.connect(DB_URL);
+        await Teacher.findOneAndUpdate({email: email}, {
+            password: newHashedPassword
+        });
+        mongoose.disconnect();
+        return;
+    } catch (error) {
+        mongoose.disconnect();
+        throw new Error(error);
+    }
+}

@@ -37,23 +37,20 @@ exports.getStudentData = id => {
     });
 }; 
 
-exports.updateStudent = (id, name, password) => {
+exports.updateStudent = (id, name, email) => {
     return new Promise((resolve, reject) => {
         mongoose
             .connect(DB_URL, {useNewUrlParser: true, useUnifiedTopology: true})
             .then(() => {
-                return bcrypt.hash(password, 10);
-            })
-            .then(hashedPassword => {
                 return Student.findByIdAndUpdate(id, {
                     name: name, 
-                    password: hashedPassword
+                    email: email
                 })
             })
             .then(student => {
                 if(student){
                     mongoose.disconnect();
-                    resolve();
+                    resolve(student);
                 }
                 else {reject('there is no student match this id')}
             })
@@ -96,3 +93,17 @@ exports.changeImage = async (studentId, image) => {
     }
 }
 
+exports.changePassword = async (email, newPassword) => {
+    try {
+        newHashedPassword = await bcrypt.hash(newPassword, 10);
+        await mongoose.connect(DB_URL);
+        await Student.findOneAndUpdate({email: email}, {
+            password: newHashedPassword
+        });
+        mongoose.disconnect();
+        return;
+    } catch (error) {
+        mongoose.disconnect();
+        throw new Error(error);
+    }
+}
