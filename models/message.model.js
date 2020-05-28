@@ -5,9 +5,10 @@ mongoose.Promise = global.Promise;
 const DB_URL = 'mongodb://localhost:27017/virtual-classroom';
 
 const messageSchema = mongoose.Schema({
+    subject: String,
     content: String, 
-    sender: {id: String, name: String, character: String}, // character: {teacher / student} 
-    reciever: {id: String, name: String, character: String},
+    sender: {id: String, name: String, image: String, character: String}, // character: {teacher / student} 
+    reciever: {id: String, name: String, image: String, character: String},
     timestamp: Number
 })
 
@@ -31,6 +32,17 @@ exports.getMessageById = async id => {
     }
 }
 
+exports.getMessagesBelongPerson = async (person) => {
+    try {
+        mongoose.connect(DB_URL);
+        let messages = Message.find({$or: [{sender: person}, {reciever: person}]});
+        mongoose.disconnect();
+        return messages;
+    } catch (error) {
+        mongoose.disconnect();
+        throw new Error(error);
+    }
+}
 
 exports.getMessagesBetweenSenderAndReciever = async (sender, reciever) => {
     try {
@@ -59,7 +71,7 @@ exports.sendMessage = async messageData => {
         await mongoose.connect(DB_URL);
         let message = new Message(messageData);
         await message.save();
-        mongoose/disconnect();
+        mongoose.disconnect();
         return;
     } catch (error) {
         mongoose.disconnect();

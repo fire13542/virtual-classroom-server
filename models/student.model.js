@@ -11,13 +11,15 @@ const studentSchema = mongoose.Schema({
     password: String, 
     image: {type: String, default: 'default-student-image.png'},
     enrolledCourses: {
-        type: [{id: String, name: String, teacherName: String}],
+        type: [{id: String, name: String, teacherId: String, teacherName: String, image: String}],
         default: []
     }
 }); 
 
 const Student = mongoose.model('student', studentSchema); 
 exports.Student = Student;
+
+const Course = require('./course.model').Course;
 
 exports.getStudentData = id => {
     return new Promise((resolve, reject) => {
@@ -61,22 +63,23 @@ exports.updateStudent = (id, name, email) => {
     })
 }
 
-exports.deleteStudent = (id) => {
-    return new Promise((resolve, reject) => {
-        mongoose
-            .connect(DB_URL)
-            .then(() => {
-                return Student.findByIdAndDelete(id);
+exports.deleteStudent = async (id) => {
+    try {
+        await mongoose.connect(DB_URL, {useNewUrlParser: true});
+        let student = Student.findByIdAndDelete(id);
+        for(let course of student.enrolledCourses){
+            Course.findByIdAndUpdate(course.id, {
+                $pull: {
+                    members: {id: student._id, name: student.name, image: student.image}
+                }
             })
-            .then(() => {
-                mongoose.disconnect();
-                resolve();
-            })
-            .catch(err => {
-                mongoose.disconnect();
-                reject(err);
-            });
-    });
+        }
+        mongoose.disconnect();
+        return;
+    } catch (error) {
+        mongoose.disconnect();
+        throw new Error(error);
+    }
 }
 
 exports.changeImage = async (studentId, image) => {
@@ -104,6 +107,56 @@ exports.changePassword = async (email, newPassword) => {
         return;
     } catch (error) {
         mongoose.disconnect();
+        throw new Error(error);
+    }
+}
+
+exports.enrollCourse = async (studentId, studentName, studentImage, courseCode) => {
+    try {
+        await mongoose.connect(DB_URL, {useNewUrlParser: true, useUnifiedTopology: true});
+        let course = await Course.findOne({courseCode: courseCode});
+        if(!course){
+            throw 'there is no course with this code'
+        }
+        let courseData = {
+            id: course._id, 
+            name: course.name, 
+            teacherId: course.teacherId, 
+            teacherName: course.teacherName, 
+            image: course.image
+        }
+        await Student.findByIdAndUpdate(studentId, {
+            $push: {
+                enrolledCourses: courseData
+            }
+        });
+        await Course.findByIdAndUpdate(course._id, {
+            $push: {
+                members: {id: studentId, name: studentName, image: studentImage}
+            }
+        });
+        return courseData;
+    } catch (error) {
+        throw error;
+    }
+}
+
+exports.leaveCourse = async (student, course) => {
+    try {
+        await mongoose.connect(DB_URL, {useNewUrlParser: true});
+        Student.findByIdAndUpdate(student.id, {
+            $pull: {
+                enrolledCourses: course
+            }
+        });
+        Course.findByIdAndUpdate(course.id, {
+            $pull: {
+                members: student
+            }
+        });
+        mongoose.disconnect();
+        return;
+    } catch (error) {
         throw new Error(error);
     }
 }

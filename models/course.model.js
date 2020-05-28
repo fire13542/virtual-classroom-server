@@ -13,7 +13,7 @@ const courseSchema = mongoose.Schema({
     teacherId: String,
     teacherName: String,
     members: {
-        type: [{id: String, name: String}],
+        type: [{id: String, name: String, image: String}],
         default: []
     },
     lessons: {
@@ -104,6 +104,8 @@ exports.deleteCourse = async (teacherId, courseData) => {
             $pull: {createdCourses: {id: courseData.id} }
         },
         {new: true});
+        await Student.updateMany(null, 
+                                { $pull: { enrolledCourses: {id: courseData.id} } });
         await Course.findByIdAndDelete(courseData.id);
         mongoose.disconnect()
         return teacher;
@@ -126,5 +128,46 @@ exports.courseImage = async (courseId, image) => {
     } catch (error) {
         mongoose.disconnect();
         throw new Error(error);
+    }
+}
+
+exports.changeCourseCode = async (courseId) => {
+    let courseCode = '';
+    let isUnique = false;
+    try {
+        await mongoose.connect(DB_URL, {useNewUrlParser: true});
+        while(!isUnique){
+            courseCode = randomString.generate(10);
+            let course = await Course.findOne({courseCode: courseCode});
+            if(course) isUnique = false;
+            else isUnique = true;
+        }
+        Course.findByIdAndUpdate(courseId, {courseCode})
+        mongoose.disconnect();
+        return courseCode;
+    } catch (error) {
+        mongoose.disconnect();
+        throw new Error(error).message;
+    }
+}
+
+exports.removeStudentFromCourse = async (courseId, student) => {
+    try {
+        await mongoose.connect(DB_URL, {useNewUrlParser: true});
+        await Course.findByIdAndUpdate(courseId, {
+            $pull: {
+                members: student
+            }
+        });
+        await Student.findByIdAndUpdate(student.id, {
+            $pull: {
+                enrolledCourses: {id: courseId}
+            }
+        });
+        mongoose.disconnect()
+        return;
+    } catch (error) {
+        mongoose.disconnect();
+        throw new Error(error)
     }
 }

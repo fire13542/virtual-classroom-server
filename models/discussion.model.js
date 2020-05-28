@@ -11,6 +11,26 @@ const discussionSchema = mongoose.Schema({
 const Discussion = mongoose.model('discussion', discussionSchema);
 exports.Discussion = Discussion;
 
+exports.createNewDiscussion = async (teacherId, teacherName, members) => {
+    try {
+        mongoose.connect(DB_URL);
+        let dicussionMembers = [];
+        dicussionMembers.push({id: teacherId, name: teacherName, character: 'teacher'});
+        members.forEach(member => {
+            dicussionMembers.push({id: member.id, name: member.name, character: 'student'});
+        });
+        let discussion = new Discussion({
+            members: dicussionMembers
+        });
+        let d = await discussion.save();
+        mongoose.disconnect();
+        return d._id;
+    } catch (error) {
+        mongoose.disconnect();
+        throw new Error(error);
+    }
+    
+}
 
 exports.getMembers = async (discussionId) => {
     try {
@@ -18,19 +38,6 @@ exports.getMembers = async (discussionId) => {
         let members = await Discussion.findById(discussionId).members;
         mongoose.disconnect();
         return members;
-    } catch (error) {
-        mongoose.disconnect();
-        throw new Error(error);
-    }
-}
-
-exports.newDiscussion = async (discussionData) => {
-    try {
-        await mongoose.connect(DB_URL);
-        let discussion = new Discussion(discussionData);
-        let d = await discussion.save();
-        mongoose.disconnect();
-        return d._id;
     } catch (error) {
         mongoose.disconnect();
         throw new Error(error);

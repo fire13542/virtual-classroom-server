@@ -17,7 +17,7 @@ exports.updateStudent = (req, res, next) => {
 
 exports.deleteStudent = (req, res, next) => {
     studentModel
-            .deleteStudent(req.body.id)
+            .deleteStudent(req.body.studentId)
             .then(() => res.json({
                     delete: true
                 })
@@ -57,6 +57,36 @@ exports.changePassword = (req, res, next) => {
         .catch(err => {
             res.json({
                 passwordChanged: false,
+                errMsg: err
+            })
+        })
+}
+
+exports.enrollCourse = (req, res, next) => {
+    studentModel.enrollCourse(req.body.studentId, req.body.studentName, req.body.studentImage, req.body.courseCode)
+        .then(course => {
+            console.log(course)
+            res.json({
+                course: course
+            })
+        })
+        .catch(err => {
+            res.json({
+                errMsg: err
+            })
+        })
+}
+
+exports.leaveCourse = (req, res, next) => {
+    studentModel.leaveCourse(req.body.student, req.body.course)
+        .then(() => {
+            res.json({
+                leaved: true
+            })
+        })
+        .catch(err => {
+            res.json({
+                leaved: false,
                 errMsg: err
             })
         })

@@ -5,6 +5,11 @@ const multer = require('multer');
 const authController = require('../controllers/auth.controller');
 const courseCountroller = require('../controllers/course.controller');
 
+router.post('/get', 
+            authController.verifyToken,
+            bodyParser.json(),
+            courseCountroller.getCourseById);
+
 router.post('/new', 
             authController.verifyToken,
             bodyParser.json(),
@@ -27,8 +32,19 @@ router.post('/image',
                     }
                 })
             }).single("avatar"),
-            courseCountroller.courseImage)
+            courseCountroller.courseImage);
 
-router.get('/carousel', courseCountroller.getCarouselImages)
+router.post('/courseCode', 
+            authController.verifyToken,
+            bodyParser.json(),
+            courseCountroller.changeCourseCode
+            );
+
+router.get('/carousel', courseCountroller.getCarouselImages);
+
+router.put('/remove-student', 
+            authController.verifyToken,
+            bodyParser.json(),
+            courseCountroller.removeStudentFromCourse)
 
 module.exports = router;

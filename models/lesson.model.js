@@ -5,9 +5,16 @@ mongoose.Promise = global.Promise;
 
 const DB_URL = 'mongodb://localhost:27017/virtual-classroom';
 
+const courseModel = require('./course.model');
+const discussionModel = require('./discussion.model');
+
 const lessonSchema = mongoose.Schema({
+    courseId: String,
     name: String,
-    screen: String,
+    screen: {
+        type: String,
+        default: ''
+    },
     links: {
         type: [{statement: String, link: String}],
         default: []
@@ -16,11 +23,55 @@ const lessonSchema = mongoose.Schema({
         type: [String],
         default: []
     },
-    discussionId: String
+    discussionId: String, 
+    createDate: Date
 })
 
 const Lesson = mongoose.model('lesson', lessonSchema);
 exports.Lesson = Lesson;
+
+
+exports.createNewLesson = async (courseId, courseName, lessonName, teacherId, teacherName, members) => {
+    try {
+        let discussionId = await discussionModel.createNewDiscussion(teacherId, teacherName, members);
+        await mongoose.connect(DB_URL);
+        let lesson = new Lesson({
+            courseId: courseId,
+            name: lessonName,
+            discussionId: discussionId,
+            createDate: Date.now()
+        });
+        await lesson.save();
+        await courseModel.Course.findByIdAndUpdate(courseId, {
+            $push: {
+                lessons: {id: lesson._id, name: lesson.name}
+            }
+        },
+        {new: true});
+        mongoose.disconnect();
+        await fileManager.createDir('./teachers/' + teacherId + '/' + courseName + '/' + lessonName);
+        return lesson;
+    } catch (error) {
+        console.log(error);
+        mongoose.disconnect();
+        throw new Error(error);
+    }
+}
+
+exports.deleteLesson = async (lessonId, courseId, lessonName, courseName, teacherId) => {
+    try {
+        await fileManager.removeDir('./teachers/' + teacherId + '/' + courseName + '/' + lessonName);
+        await mongoose.connect(DB_URL, {useNewUrlParser: true});
+        await Lesson.findByIdAndDelete(lessonId);
+        await Course.findByIdAndupdate(courseId, {
+            $pull: {lessons: {id: lessonId}}
+        })
+        mongoose.disconnect();
+        return;
+    } catch (error) {
+        throw new Error(error);
+    }
+}
 
 exports.getLessonById = async id => {
     try {
@@ -41,14 +92,14 @@ exports.getLessonById = async id => {
 
 exports.addLink = async (lessonId, link) => {
     try {
-        await mongoose.connect(DB_URL);
+        await mongoose.connect(DB_URL, {useNewUrlParser: true});
         await Lesson.findByIdAndUpdate(lessonId, {
             $push: {
                 links: link
             }
         });
         mongoose.disconnect();
-        return;
+        return link;
     } catch (error) {
         mongoose.disconnect();
         throw new Error(error);
@@ -57,7 +108,7 @@ exports.addLink = async (lessonId, link) => {
 
 exports.removeLink = async (lessonId, link) => {
     try {
-        await mongoose.connect(DB_URL);
+        await mongoose.connect(DB_URL, {useNewUrlParser: true});
         await Lesson.findByIdAndUpdate(lessonId, {
             $pull: {
                 links: link
@@ -73,7 +124,7 @@ exports.removeLink = async (lessonId, link) => {
 
 exports.uploadFile = async (lessonId, filename) => {
     try {
-        await mongoose.connect(DB_URL);
+        await mongoose.connect(DB_URL, {useNewUrlParser: true});
         await Lesson.findByIdAndUpdate(lessonId, {
             $push: {
                 files: filename
@@ -89,15 +140,14 @@ exports.uploadFile = async (lessonId, filename) => {
 
 exports.removeFile = async (lessonData, filename) => {
     try {
-        await mongoose.connect(DB_URL);
+        await mongoose.connect(DB_URL, {useNewUrlParser: true});
         await Lesson.findByIdAndUpdate(lessonData.lessonId, {
-            $push: {
+            $pull: {
                 files: filename
             }
         });
-
-        await fileManager.removeFile('./teachers/'+lessonData.teacherId+'/'+lessonData.courseName+'/'
-                                        +lessonData.lessonName+'/'+filename)
+        
+        await fileManager.removeFile('./teachers/'+lessonData.teacherId+'/'+lessonData.courseName+'/'+lessonData.lessonName+'/'+filename)
 
         mongoose.disconnect();
         return;

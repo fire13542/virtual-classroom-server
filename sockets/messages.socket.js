@@ -2,6 +2,16 @@ const messageModel = require('../models/message.model');
 
 module.exports = io => {
     io.on("connection", socket => {
+        socket.on("getMessages", (person) => {
+            messageModel.getMessagesBelongPerson(person)
+            .then(messages => {
+                socket.emit("messages", messages);
+            })
+            .catch(err => {
+                console.log(err);
+                // socket.emit("error");
+            })
+        })
         socket.on("sendMessage", (msg) => {
             messageModel
                 .sendMessage(msg)
@@ -12,7 +22,8 @@ module.exports = io => {
                         io.to(msg.reciever.id).emit('newMessage', msg);
                 })
                 .catch(err => {
-                    socket.emit('sendingError', 'Sending Error: try again', msg);
+                    console.log(err);
+                    // socket.emit('sendingError', 'Sending Error: try again', msg);
                 })
             });
         });

@@ -19,6 +19,9 @@ const teacherSchema = mongoose.Schema({
 const Teacher = mongoose.model('teacher', teacherSchema); 
 exports.Teacher = Teacher;
 
+const Course = require('./course.model').Course;
+const Student = require('./student.model').Student;
+
 exports.getTeacherData = id => {
     return new Promise((resolve, reject) => {
         mongoose
@@ -61,22 +64,17 @@ exports.updateTeacher = (id, name, email) => {
     })
 }
 
-exports.deleteTeacher = (id) => {
-    return new Promise((resolve, reject) => {
-        mongoose
-            .connect(DB_URL)
-            .then(() => {
-                return Teacher.deleteOne({_id: id});
-            })
-            .then(() => {
-                mongoose.disconnect();
-                resolve();
-            })
-            .catch(err => {
-                mongoose.disconnect();
-                reject(err);
-            });
-    });
+exports.deleteTeacher = async (id) => {
+    try {
+        await mongoose.connect(DB_URL, {useNewUrlParser: true});
+        let teacher = Teacher.findByIdAndDelete(id);
+        for(let course of teacher.createdCourses){
+            Course.findByIdAndDelete(course.id);
+        }
+        Student.updateMany()
+    } catch (error) {
+        
+    }
 }
 
 exports.changeImage = async (teacherId, image) => {

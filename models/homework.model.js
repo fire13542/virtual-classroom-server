@@ -6,7 +6,8 @@ const DB_URL = 'mongodb://localhost:27017/virtual-classroom';
 
 const homeworkSchema = mongoose.Schema({
     name: String,
-    screen: String,
+    createDate: Date,
+    toDate: Date,
     links: {
         type: [{statement: String, link: String}],
         default: []
@@ -22,8 +23,51 @@ const homeworkSchema = mongoose.Schema({
     discussionId: String
 })
 
-const Homework = mongoose.model('homework', lessonSchema);
+const Homework = mongoose.model('homework', homeworkSchema);
 exports.Homework = Homework;
+
+
+exports.createNewHomework = async (courseId, courseName, homeworkName, toDate, teacherId, teacherName, members) => {
+    try {
+        let discussionId = await discussionModel.createNewDiscussion(teacherId, teacherName, members);
+        await mongoose.connect(DB_URL);
+        let homework = new Homework({
+            courseId: courseId,
+            name: homeworkName,
+            discussionId: discussionId,
+            createDate: Date.now(),
+            toDate: toDate
+        });
+        await homework.save();
+        await courseModel.Course.findByIdAndUpdate(courseId, {
+            $push: {
+                homeworks: {id: homework._id, name: homework.name, toDate: homework.toDate}
+            }
+        },
+        {new: true});
+        mongoose.disconnect();
+        await fileManager.createDir('./teachers/' + teacherId + '/' + courseName + '/homeworks/' +  homeworkName);
+        return homework;
+    } catch (error) {
+        mongoose.disconnect();
+        throw new Error(error);
+    }
+}
+
+exports.deleteHomework = async (homeworkId, courseId, homeworkName, courseName, teacherId) => {
+    try {
+        await fileManager.removeDir('./teachers/' + teacherId + '/' + courseName + '/homeworks/' + homeworkName);
+        await mongoose.connect(DB_URL, {useNewUrlParser: true});
+        await Homework.findByIdAndDelete(homeworkId);
+        await Course.findByIdAndupdate(courseId, {
+            $pull: {homeworks: {id: homeworkId}}
+        })
+        mongoose.disconnect();
+        return;
+    } catch (error) {
+        throw new Error(error);
+    }
+}
 
 exports.getHomeworkById = async id => {
     try {
@@ -44,7 +88,7 @@ exports.getHomeworkById = async id => {
 
 exports.addLink = async (homeworkId, link) => {
     try {
-        await mongoose.connect(DB_URL);
+        await mongoose.connect(DB_URL, {useNewUrlParser: true});
         await Homework.findByIdAndUpdate(homeworkId, {
             $push: {
                 links: link
@@ -60,7 +104,7 @@ exports.addLink = async (homeworkId, link) => {
 
 exports.removeLink = async (homeworkId, link) => {
     try {
-        await mongoose.connect(DB_URL);
+        await mongoose.connect(DB_URL, {useNewUrlParser: true});
         await Homework.findByIdAndUpdate(homeworkId, {
             $pull: {
                 links: link
@@ -76,7 +120,7 @@ exports.removeLink = async (homeworkId, link) => {
 
 exports.uploadFile = async (homeworkId, filename) => {
     try {
-        await mongoose.connect(DB_URL);
+        await mongoose.connect(DB_URL, {useNewUrlParser: true});
         await Homework.findByIdAndUpdate(homeworkId, {
             $push: {
                 files: filename
@@ -92,15 +136,14 @@ exports.uploadFile = async (homeworkId, filename) => {
 
 exports.removeFile = async (homeworkData, filename) => {
     try {
-        await mongoose.connect(DB_URL);
-        await Lesson.findByIdAndUpdate(homeworkData.homeworkId, {
-            $push: {
+        await mongoose.connect(DB_URL, {useNewUrlParser: true});
+        await Homework.findByIdAndUpdate(homeworkData.homeworkId, {
+            $pull: {
                 files: filename
             }
         });
 
-        await fileManager.removeFile('./teachers/'+homeworkData.teacherId+'/'+homeworkData.courseName+'/'
-                                        +homeworkData.homeworkName+'/'+filename)
+        await fileManager.removeFile('./teachers/'+homeworkData.teacherId+'/'+homeworkData.courseName+'/homeworks/'+homeworkData.homeworkName+'/'+filename);
 
         mongoose.disconnect();
         return;
@@ -112,7 +155,7 @@ exports.removeFile = async (homeworkData, filename) => {
 
 exports.uploadSolution = async (homeworkId, solution) => {
     try {
-        await mongoose.connect(DB_URL);
+        await mongoose.connect(DB_URL, {useNewUrlParser: true});
         await Homework.findByIdAndUpdate(homeworkId, {
             $push: {
                 solutions: solution

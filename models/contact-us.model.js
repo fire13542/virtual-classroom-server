@@ -47,3 +47,17 @@ exports.recieveMessages = async () => {
         throw new Error(error);
     }
 }
+
+exports.read = async (contact) => {
+    try {
+        await mongoose.connect(DB_URL, {useNewUrlParser: true});
+        await Contact.findByIdAndUpdate(contact._id, {
+            read: true
+        })
+        mongoose.disconnect();
+        return;
+    } catch (error) {
+        mongoose.disconnect();
+        throw new Error(error);
+    }
+}

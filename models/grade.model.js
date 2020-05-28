@@ -7,6 +7,8 @@ const DB_URL = 'mongodb://localhost:27017/virtual-classroom';
 const gradeSchema = mongoose.Schema({
     studentId: String,
     quizId: String,
+    guizName: String,
+    courseName: String,
     grade: Number
 })
 
@@ -26,30 +28,6 @@ exports.newGrade = async (gradeData) => {
     }
 }
 
-exports.updateGrade = async (quizId, studentId, grade) => {
-    try {
-        await mongoose.connect(DB_URL);
-        await Grade.findOneAndUpdate({quizId, studentId}, {grade});
-        mongoose.disconnect();
-        return;
-    } catch (error) {
-        mongoose.disconnect();
-        throw new Error(error);
-    }
-}
-
-exports.getCourseGrades = async (courseId) => {
-    try {
-        await mongoose.connect(DB_URL);
-        let grades = await Grade.find({courseId});
-        mongoose.disconnect();
-        return grades;
-    } catch (error) {
-        mongoose.disconnect();
-        throw new Error(error);
-    }
-}
-
 exports.getStudentGrades = async (studentId) => {
     try {
         await mongoose.connect(DB_URL);
@@ -62,3 +40,14 @@ exports.getStudentGrades = async (studentId) => {
     }
 }
 
+exports.getQuizGrades = async (quizId) => {
+    try {
+        await mongoose.connect(DB_URL);
+        let grades = await Grade.find({quizId});
+        mongoose.disconnect();
+        return grades;
+    } catch (error) {
+        mongoose.disconnect();
+        throw new Error(error);
+    }
+}

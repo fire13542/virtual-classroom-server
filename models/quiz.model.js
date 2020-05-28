@@ -13,9 +13,10 @@ const quizSchema = mongoose.Schema({
     status: String, // Waiting | Running | Terminating 
     questions: {
         type: [{
-            question: String,
+            questionText: String,
             trueAnswer: String,
-            choices: [String]
+            choices: [String],
+            grades: Number
         }],
         default:[]
     },
@@ -37,6 +38,16 @@ exports.newQuiz = async (quizData) => {
         await mongoose.connect(DB_URL);
         let quiz = new Quiz(quizData);
         let q = await quiz.save();
+        setTimeout(() => {
+            mongoose.connect(DB_URL, {useNewUrlParser: true});
+            Quiz.findByIdAndUpdate(q._id, {status: "Running"});
+            mongoose.disconnect();
+        }, q.quizDate - Date.now());
+        setTimeout(() => {
+            mongoose.connect(DB_URL, {useNewUrlParser: true});
+            Quiz.findByIdAndUpdate(q._id, {status: "Terminating"});
+            mongoose.disconnect();
+        }, q.quizEnd - Date.now())
         mongoose.disconnect();
         return q;
     } catch (error) {
@@ -62,10 +73,50 @@ exports.getQuizById = async (quizId) => {
         await mongoose.connect(DB_URL);
         let quiz = await Quiz.findById(quizId);
         mongoose.disconnect();
-        return {quizName, maxGrade, quizDate, duration, status} = quiz;
+        return {quizName, maxGrade, quizDate, quizEnd, status} = quiz;
     } catch (error) {
         mongoose.disconnect();
         throw new Error(error);
+    }
+}
+
+exports.getQuizQuestions = async (quizId) => {
+    try {
+        let questions;
+        await mongoose.connect(DB_URL, {useNewUrlParser: true});
+        let quiz = await Quiz.findById(quizId);
+        // if(quiz.status !== "Running", Date.now() >= quiz.quizData && Date.now() <= quiz.quizEnd){
+        //     quiz.status = "Running";
+        //     Quiz.findByIdAndUpdate(quizId, {status: "Running"})
+        // }
+        // if(quiz.status === "Running") {
+        //     questions = quiz.questions;
+        // }
+        // else {
+        //     throw "Quiz is " + quiz.status;
+        // }
+        questions = quiz.questions;
+        mongoose.disconnect();
+        return questions;
+    } catch (error) {
+        mongoose.disconnect();
+        throw new Error(error);
+    }
+}
+
+exports.attend = async (quizId, attendantStudent) => {
+    try {
+        await mongoose.connect(DB_URL, {useNewUrlParser: true});
+        await Quiz.findByIdAndUpdate(quizId, {
+            $push: {
+                attendants: attendantStudent
+            }
+        });
+        mongoose.disconnect();
+        return;
+    } catch (error) {
+        mongoose.disconnect();
+        return;
     }
 }
 
@@ -121,22 +172,5 @@ exports.runQuiz = async (quizId, status) => {
     }
 }
 
-exports.getQuizQuestion = async (quizId) => {
-    try {
-        let questions;
-        await mongoose.connect(DB_URL);
-        let quiz = await Quiz.findById(quizId);
-        if(quiz.status === "Running") {
-            questions = quiz.questions;
-        }
-        else {
-            throw "Quiz is " + quiz.status;
-        }
-        mongoose.disconnect();
-        return questions;
-    } catch (error) {
-        mongoose.disconnect();
-        throw new Error(error);
-    }
-}
+
 

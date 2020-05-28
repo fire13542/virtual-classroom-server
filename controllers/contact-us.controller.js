@@ -15,3 +15,32 @@ exports.sendNewMessage = (req, res, next) => {
             })
         })
 }
+
+exports.recieveMessages = (req, res, next) => {
+    contactModel.recieveMessages()
+    .then(messages => {
+        res.json({
+            messages
+        });
+    })
+    .catch(err => {
+        res.json({
+            errMsg: err
+        });
+    })
+}
+
+exports.read = (req, res, next) => {
+    contactModel.read(req.body.contact)
+    .then(() => {
+        res.json({
+            read: true
+        });
+    })
+    .catch(err => {
+        res.json({
+            read: false,
+            errMsg: err
+        });
+    })
+}

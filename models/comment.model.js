@@ -8,7 +8,7 @@ const commentSchema = mongoose.Schema({
     discussionId: String, 
     content: String, 
     sender: {id: String, name: String, character: String}, // character: {teacher / student} 
-    timestamp: Number
+    timestamp: Date
 })
 
 const Comment = mongoose.model('comment', commentSchema);
@@ -44,9 +44,9 @@ exports.getDiscussionComments = async (discussionId) => {
     }
 }
 
-exports.removeComment = (commentId) => {
+exports.removeComment = async (commentId) => {
     try {
-        await mongoose.connect(DB_URL);
+        await mongoose.connect(DB_URL, {useNewUrlParser: true});
         await Comment.findByIdAndDelete(commentId);
         mongoose.disconnect();
         return;
