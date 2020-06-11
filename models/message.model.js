@@ -9,7 +9,7 @@ const messageSchema = mongoose.Schema({
     content: String, 
     sender: {id: String, name: String, image: String, character: String}, // character: {teacher / student} 
     reciever: {id: String, name: String, image: String, character: String},
-    timestamp: Number
+    timestamp: Date
 })
 
 const Message = mongoose.model('message', messageSchema);
@@ -35,7 +35,7 @@ exports.getMessageById = async id => {
 exports.getMessagesBelongPerson = async (person) => {
     try {
         mongoose.connect(DB_URL);
-        let messages = Message.find({$or: [{sender: person}, {reciever: person}]});
+        let messages = await Message.find({$or: [{sender: person}, {reciever: person}]});
         mongoose.disconnect();
         return messages;
     } catch (error) {
@@ -68,11 +68,11 @@ exports.getMessagesBetweenSenderAndReciever = async (sender, reciever) => {
 
 exports.sendMessage = async messageData => {
     try {
-        await mongoose.connect(DB_URL);
+        await mongoose.connect(DB_URL, {useUnifiedTopology: true});
         let message = new Message(messageData);
-        await message.save();
+        let m = await message.save();
         mongoose.disconnect();
-        return;
+        return m;
     } catch (error) {
         mongoose.disconnect();
         throw new Error(error);

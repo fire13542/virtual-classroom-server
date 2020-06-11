@@ -30,6 +30,7 @@ const lessonSchema = mongoose.Schema({
 const Lesson = mongoose.model('lesson', lessonSchema);
 exports.Lesson = Lesson;
 
+const Course = require('./course.model').Course;
 
 exports.createNewLesson = async (courseId, courseName, lessonName, teacherId, teacherName, members) => {
     try {
@@ -61,14 +62,15 @@ exports.createNewLesson = async (courseId, courseName, lessonName, teacherId, te
 exports.deleteLesson = async (lessonId, courseId, lessonName, courseName, teacherId) => {
     try {
         await fileManager.removeDir('./teachers/' + teacherId + '/' + courseName + '/' + lessonName);
-        await mongoose.connect(DB_URL, {useNewUrlParser: true});
+        await mongoose.connect(DB_URL);
         await Lesson.findByIdAndDelete(lessonId);
-        await Course.findByIdAndupdate(courseId, {
+        await Course.findByIdAndUpdate(courseId, {
             $pull: {lessons: {id: lessonId}}
         })
         mongoose.disconnect();
         return;
     } catch (error) {
+        console.log(error)
         throw new Error(error);
     }
 }

@@ -1,5 +1,16 @@
 const teacherModel = require('../models/teacher.model');
 
+exports.getTeacherData = (req, res, next) => {
+    teacherModel.getTeacherData(req.params.id)
+    .then(teacher => {
+        res.json({teacher});
+    })
+    .catch(err => {
+        res.json({
+            error: true
+        })
+    })
+}
 
 exports.updateTeacher = (req, res, next) => {
     teacherModel

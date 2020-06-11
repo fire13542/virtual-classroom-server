@@ -1,10 +1,10 @@
 module.exports = io => {
     io.on("connection", socket => {
         socket.on("joinStudentNotificationsRoom", studentId => {
-            socket.join('student' + studentId);
+            socket.join(studentId);
         });
         socket.on("joinTeacherNotificationsRoom", teacherId => {
-            socket.join('teacher' + teacherId);
+            socket.join(teacherId);
         })
         socket.on("studentGoOnline", studentId => {
             io.onlineStudents[studentId] = true;

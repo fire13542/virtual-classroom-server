@@ -5,18 +5,19 @@ const multer = require('multer');
 const authController = require('../controllers/auth.controller');
 const studentController = require('../controllers/student.controller');
 
+router.get('/refresh/:id', 
+            authController.verifyToken,
+            studentController.getStudentData);
 
 router.put('/update', 
             authController.verifyToken,
             bodyParser.json(),
-            studentController.updateStudent)
+            studentController.updateStudent);
 
 router.delete('/delete', 
             authController.verifyToken,
             bodyParser.json(),
             studentController.deleteStudent);
-
-
 
 router.post('/image', 
             authController.verifyToken,

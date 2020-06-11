@@ -18,14 +18,19 @@ router.get('/:id',
             authController.verifyToken,
             quizController.getQuizById);
 
-router.post('/questions',
+router.post('/student-questions',
             authController.verifyToken,
             bodyParser.json(),
-            quizController.getQuizQuestions);
+            quizController.getStudentQuizQuestions);
 
-router.post('/attend',
+router.post('/teacher-questions',
             authController.verifyToken,
             bodyParser.json(),
-            quizController.attend)
+            quizController.getTeacherQuizQuestions);
+
+router.post('/finish-quiz',
+            authController.verifyToken,
+            bodyParser.json(),
+            quizController.finishQuiz)
 
 module.exports = router

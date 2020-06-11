@@ -50,6 +50,26 @@ router.post('/removeLink',
             bodyParser.json(),
             homeworkController.removeLink);
 
+router.post('/upload-solution', 
+            authController.verifyToken,
+            bodyParser.urlencoded({extended: true}),
+            multer({
+                storage: multer.diskStorage({
+                    destination: (req, file, cb) => {
+                        cb(null, "teachers/"+req.body.teacherId+"/"+req.body.courseName+"/homeworks/"+req.body.homeworkName+"/solutions/");
+                    },
+                    filename: (req, file, cb) => {
+                        cb(null, Date.now() + "-" + file.originalname);
+                    }
+                })
+            }).single("solutionFile"), 
+            homeworkController.uploadSolution);
+
+router.post('/download-solution', 
+            authController.verifyToken,
+            bodyParser.json(),
+            homeworkController.downloadSolution)
+
 router.get('/comments/:discussionId', 
             authController.verifyToken,
             homeworkController.getDiscussionComments);

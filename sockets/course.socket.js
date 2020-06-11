@@ -6,12 +6,12 @@ module.exports = io => {
             socket.join(courseId);
         });
         socket.on('newAnnouncement', ({courseId, announcement}) => {
-            announcementModel.newAnnouncement(courseId, ...announcement)
+            announcementModel.newAnnouncement(courseId, announcement.courseName, announcement.title, announcement.description, announcement.fromDate, announcement.toDate)
             .then(announcement => {
                 io.to(courseId).emit('recieveAnnouncement', announcement);
             })
             .catch(err => {
-                socket.emit('error');
+                // socket.emit('error');
                 console.log(err);
             })
         })

@@ -7,6 +7,9 @@ const teacherController = require('../controllers/teacher.controller');
 const studentController = require('../controllers/student.controller');
 const courseController = require('../controllers/course.controller');
 
+router.get('/refresh/:id', 
+            authController.verifyToken,
+            teacherController.getTeacherData);
 
 router.put('/update', 
             authController.verifyToken,
@@ -41,6 +44,8 @@ router.post('/image',
 router.put('/change-password', 
             authController.verifyToken,
             bodyParser.json(),
-            teacherController.changePassword)
+            teacherController.changePassword);
+
+
 
 module.exports = router;

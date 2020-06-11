@@ -25,13 +25,13 @@ router.post('/image',
             multer({
                 storage: multer.diskStorage({
                     destination: (req, file, cb) => {
-                        cb(null, "teachers/"+req.body.teacherId+"/"+req.body.courseName+"/");
+                        cb(null, "images/courses-images");
                     },
                     filename: (req, file, cb) => {
                         cb(null, Date.now() + "-" + file.originalname);
                     }
                 })
-            }).single("avatar"),
+            }).single("image"),
             courseCountroller.courseImage);
 
 router.post('/courseCode', 
@@ -45,6 +45,17 @@ router.get('/carousel', courseCountroller.getCarouselImages);
 router.put('/remove-student', 
             authController.verifyToken,
             bodyParser.json(),
-            courseCountroller.removeStudentFromCourse)
+            courseCountroller.removeStudentFromCourse);
+
+router.post('/students', 
+            authController.verifyToken,
+            bodyParser.json(), 
+            courseCountroller.getStudentsOfCourses);
+
+router.post('/teachers', 
+            authController.verifyToken,
+            bodyParser.json(), 
+            courseCountroller.getTeachersOfCourses);
+
 
 module.exports = router;

@@ -1,8 +1,12 @@
 const mongoose = require('mongoose');
+const fileManager = require('file-manager-js');
 
 mongoose.Promise = global.Promise;
 
 const DB_URL = 'mongodb://localhost:27017/virtual-classroom';
+
+const courseModel = require('./course.model');
+const discussionModel = require('./discussion.model');
 
 const homeworkSchema = mongoose.Schema({
     name: String,
@@ -26,6 +30,7 @@ const homeworkSchema = mongoose.Schema({
 const Homework = mongoose.model('homework', homeworkSchema);
 exports.Homework = Homework;
 
+const Course = require('./course.model').Course;
 
 exports.createNewHomework = async (courseId, courseName, homeworkName, toDate, teacherId, teacherName, members) => {
     try {
@@ -47,8 +52,10 @@ exports.createNewHomework = async (courseId, courseName, homeworkName, toDate, t
         {new: true});
         mongoose.disconnect();
         await fileManager.createDir('./teachers/' + teacherId + '/' + courseName + '/homeworks/' +  homeworkName);
+        await fileManager.createDir('./teachers/' + teacherId + '/' + courseName + '/homeworks/' +  homeworkName + '/solutions');
         return homework;
     } catch (error) {
+        console.log(error)
         mongoose.disconnect();
         throw new Error(error);
     }
@@ -57,11 +64,11 @@ exports.createNewHomework = async (courseId, courseName, homeworkName, toDate, t
 exports.deleteHomework = async (homeworkId, courseId, homeworkName, courseName, teacherId) => {
     try {
         await fileManager.removeDir('./teachers/' + teacherId + '/' + courseName + '/homeworks/' + homeworkName);
-        await mongoose.connect(DB_URL, {useNewUrlParser: true});
+        await mongoose.connect(DB_URL);
         await Homework.findByIdAndDelete(homeworkId);
-        await Course.findByIdAndupdate(courseId, {
+        await Course.findByIdAndUpdate(courseId, {
             $pull: {homeworks: {id: homeworkId}}
-        })
+        });
         mongoose.disconnect();
         return;
     } catch (error) {

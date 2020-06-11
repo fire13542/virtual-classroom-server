@@ -4,10 +4,10 @@ const bodyParser = require('body-parser');
 const authController = require('../controllers/auth.controller');
 const gradeController = require('../controllers/grade.controller');
 
-router.post('/new', 
-            authController.verifyToken,
-            bodyParser.json(),
-            gradeController.newGrade);
+// router.post('/new', 
+//             authController.verifyToken,
+//             bodyParser.json(),
+//             gradeController.newGrade);
 
 router.post('/student',
             authController.verifyToken,

@@ -17,7 +17,7 @@ exports.getCourseById = (req, res, next) => {
 }
 exports.createNewCourse = (req, res, next) => {
     courseModel
-        .createNewCourse(req.body.teacherId, req.body.courseName)
+        .createNewCourse(req.body.teacherId, req.body.teacherName, req.body.courseName)
         .then(teacher => {
             res.json({
                 courseCreated: true,
@@ -51,9 +51,10 @@ exports.deleteCourse = (req, res, next) => {
 exports.courseImage = (req, res, next) => {
     courseModel
         .courseImage(req.body.courseId, req.file.filename)
-        .then(() => {
+        .then(imageName => {
             res.json({
-                imageChanged: true
+                imageChanged: true, 
+                image: imageName
             })
         })
         .catch(err => {
@@ -107,3 +108,31 @@ exports.removeStudentFromCourse = (req, res, next) => {
     })
 }
 
+exports.getStudentsOfCourses = (req, res, next) => {
+    courseModel.getStudentsOfCourses(req.body.coursesIds)
+    .then(students => {
+        res.json({
+            students
+        })
+    })
+    .catch(err => {
+        res.json({
+            errMsg: err
+        })
+    })
+}
+
+
+exports.getTeachersOfCourses = (req, res, next) => {
+    courseModel.getTeachersOfCourses(req.body.teachersIds)
+    .then(teachers => {
+        res.json({
+            teachers
+        })
+    })
+    .catch(err => {
+        res.json({
+            errMsg: err
+        })
+    })
+}

@@ -88,6 +88,11 @@ exports.changeImage = async (studentId, image) => {
         await Student.findByIdAndUpdate(studentId, {
             image: image
         });
+        await Course.updateMany({'members.id': studentId},{
+            $set: {
+                'members.$.image': imageName
+            }
+        });
         mongoose.disconnect();
         return;
     } catch (error) {

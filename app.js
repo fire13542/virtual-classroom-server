@@ -14,6 +14,7 @@ const courseRouter = require('./routes/course.route');
 const lessonRouter = require('./routes/lesson.route');
 const homeworkRouter = require('./routes/homework.route');
 const quizRouter = require('./routes/quiz.route');
+const gradeRouter = require('./routes/grade.route');
 const contactRouter = require('./routes/contact-us.route');
 const blogRouter = require('./routes/blog.route');
 
@@ -36,7 +37,9 @@ io.onlineStudents = {};
 // })
 
 require('./sockets/init.socket')(io);
+require('./sockets/course.socket')(io);
 require('./sockets/lesson.socket')(io);
+require('./sockets/messages.socket')(io);
 
 app.use(express.static(path.join(__dirname, 'assets')));
 app.use(express.static(path.join(__dirname, 'images')));
@@ -53,18 +56,18 @@ app.use('/course', courseRouter);
 app.use('/lesson', lessonRouter);
 app.use('/homework', homeworkRouter);
 app.use('/quiz', quizRouter);
+app.use('/grade', gradeRouter);
 
 app.post('/download-file', 
         bodyParser.json(),
         (req, res, next) => {
             let filePath = '';
             if(req.body.homework){
-                filePath = path.join(__dirname, 'teachers', req.body.teacherId, req.body.courseName, 'homeworks', req.body.homeworkName, req.body.filename);
+                filePath = path.join(__dirname, 'teachers', req.body.teacherId.toString(), req.body.courseName, 'homeworks', req.body.homeworkName, req.body.filename);
             }
             else {
                 filePath = path.join(__dirname, 'teachers', req.body.teacherId, req.body.courseName, req.body.lessonName, req.body.filename);
             }
-            console.log(filePath)
             res.sendFile(filePath);
         })
 

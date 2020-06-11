@@ -92,7 +92,7 @@ exports.addLink = (req, res, next) => {
 
 exports.removeLink = (req, res, next) => {
     lessonModel.removeLink(req.body.lessonId, req.body.link)
-        .then(link => {
+        .then(() => {
             res.json({
                 linkRemoved: true
             })

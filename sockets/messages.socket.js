@@ -15,11 +15,11 @@ module.exports = io => {
         socket.on("sendMessage", (msg) => {
             messageModel
                 .sendMessage(msg)
-                .then(() => {
+                .then((message) => {
                     if(io.onlineTeachers[msg.sender.id] || io.onlineStudents[msg.sender.id])
-                        io.to(msg.sender.id).emit('newMessage', msg);
+                        io.to(msg.sender.id).emit('newMessage', message);
                     if(io.onlineTeachers[msg.reciever.id] || io.onlineStudents[msg.reciever.id])
-                        io.to(msg.reciever.id).emit('newMessage', msg);
+                        io.to(msg.reciever.id).emit('newMessage', message);
                 })
                 .catch(err => {
                     console.log(err);

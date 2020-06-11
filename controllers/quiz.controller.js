@@ -30,7 +30,7 @@ exports.deleteQuiz = (req, res, next) => {
 }
 
 exports.getQuizById = (req, res, next) => {
-    quizModel.getQuizById(req.params.quizId)
+    quizModel.getQuizById(req.params.id)
     .then(quiz => {
         res.json({
             quiz: quiz
@@ -43,8 +43,8 @@ exports.getQuizById = (req, res, next) => {
     })
 }
 
-exports.getQuizQuestions = (req, res, next) => {
-    quizModel.getQuizQuestions(req.body.quizId)
+exports.getStudentQuizQuestions = (req, res, next) => {
+    quizModel.getStudentQuizQuestions(req.body.quizId, req.body.attendantStudent)
     .then(questions => {
         res.json({
             questions: questions
@@ -57,16 +57,30 @@ exports.getQuizQuestions = (req, res, next) => {
     })
 }
 
-exports.attend = (req, res, next) => {
-    quizModel.attend(req.body.quizId, req.body.attendantStudent)
-    .then(() => {
+
+exports.getTeacherQuizQuestions = (req, res, next) => {
+    quizModel.getTeacherQuizQuestions(req.body.quizId)
+    .then(questions => {
         res.json({
-            attended: true
+            questions: questions
         })
     })
     .catch(err => {
         res.json({
-            attended: false,
+            errMsg: err
+        })
+    })
+}
+
+exports.finishQuiz = (req, res, next) => {
+    quizModel.finishQuiz(req.body.quiz, req.body.student, req.body.answers)
+    .then((grade) => {
+        res.json({
+            grade
+        })
+    })
+    .catch(err => {
+        res.json({
             errMsg: err
         })
     })

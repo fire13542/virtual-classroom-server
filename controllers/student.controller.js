@@ -1,5 +1,16 @@
 const studentModel = require('../models/student.model');
 
+exports.getStudentData = (req, res, next) => {
+    studentModel.getStudentData(req.params.id)
+    .then(student => {
+        res.json({student});
+    })
+    .catch(err => {
+        res.json({
+            error: true
+        })
+    })
+}
 
 exports.updateStudent = (req, res, next) => {
     studentModel
@@ -78,6 +89,7 @@ exports.enrollCourse = (req, res, next) => {
 }
 
 exports.leaveCourse = (req, res, next) => {
+    console.log(req.body);
     studentModel.leaveCourse(req.body.student, req.body.course)
         .then(() => {
             res.json({

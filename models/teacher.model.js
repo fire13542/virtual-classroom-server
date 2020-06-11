@@ -105,3 +105,4 @@ exports.changePassword = async (email, newPassword) => {
         throw new Error(error);
     }
 }
+

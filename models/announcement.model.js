@@ -46,7 +46,7 @@ exports.deleteAnnouncement = async (announcementId) => {
 exports.getAllAnnouncementOfMember = async (couresIds) => {
     try {
         await mongoose.connect(DB_URL);
-        let announcements = Announcement.find({courseId: {$in: couresIds}, fromDate:{$lt: Date.now()}, toDate: {$gt: Date.now()}});
+        let announcements = await Announcement.find({courseId: {$in: couresIds}, fromDate:{$lt: Date.now()}, toDate: {$gt: Date.now()}});
         mongoose.disconnect();
         return announcements;
     } catch (error) {

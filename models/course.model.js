@@ -53,7 +53,7 @@ exports.getCourseById = async id => {
     }
 }
 
-exports.createNewCourse = async (teacherId, courseName) => {
+exports.createNewCourse = async (teacherId, teacherName, courseName) => {
     let courseCode = '';
     let isUnique = false;
 
@@ -73,7 +73,8 @@ exports.createNewCourse = async (teacherId, courseName) => {
         let course = new Course({
             name: courseName,
             courseCode: courseCode,
-            teacherId: teacherId
+            teacherId: teacherId, 
+            teacherName: teacherName
         })
 
         await course.save();
@@ -117,14 +118,24 @@ exports.deleteCourse = async (teacherId, courseData) => {
 }
 
 
-exports.courseImage = async (courseId, image) => {
+exports.courseImage = async (courseId, imageName) => {
     try {
-        await mongoose.connect(DB_URL);
-        Course.findByIdAndUpdate(courseId, {
-            image: image
+        await mongoose.connect(DB_URL, {useNewUrlParser: true});
+        await Course.findByIdAndUpdate(courseId, {
+            image: imageName
+        });
+        await Student.updateMany({'enrolledCourses.id': courseId},{
+            $set: {
+                'enrolledCourses.$.image': imageName
+            }
+        });
+        await Teacher.updateMany({'createdCourses.id': courseId},{
+            $set: {
+                'createdCourses.$.image': imageName
+            }
         });
         mongoose.disconnect();
-        return;
+        return imageName;
     } catch (error) {
         mongoose.disconnect();
         throw new Error(error);
@@ -169,5 +180,45 @@ exports.removeStudentFromCourse = async (courseId, student) => {
     } catch (error) {
         mongoose.disconnect();
         throw new Error(error)
+    }
+}
+
+exports.getStudentsOfCourses = async (coursesIds) => {
+    try {
+        await mongoose.connect(DB_URL);
+        let courses = await Course.find({_id: {$in: coursesIds}});
+        mongoose.disconnect();
+        let students = [];
+        courses.forEach(course => {
+            for(let member of course.members){
+                students.push(member);
+            }
+        });
+        let uniqueStudents = [];
+        let uniqueStudentsIds = [];
+        students.forEach(student => {
+            if(!uniqueStudentsIds.includes(student.id)){
+                uniqueStudentsIds.push(student.id);
+                uniqueStudents.push(student);
+            }
+        })
+        return uniqueStudents;
+    } catch (error) {
+        mongoose.disconnect();
+        throw error;
+    }
+}
+
+exports.getTeachersOfCourses = async (teachersIds) => {
+    try {
+        await mongoose.connect(DB_URL);
+        let teachers = await Teacher.find({_id: {$in: teachersIds}});
+        teachers = teachers.map(teacher => {
+            return {id: teacher._id, name: teacher.name, image: teacher.image}
+        })
+        return teachers;
+    } catch (error) {
+        mongoose.disconnect();
+        throw error;
     }
 }

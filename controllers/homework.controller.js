@@ -1,5 +1,6 @@
 const homeworkModel = require('../models/homework.model');
-let commentModel = require('../models/comment.model');
+const commentModel = require('../models/comment.model');
+const path = require('path');
 
 
 exports.createNewHomework = (req, res, next) => {
@@ -24,6 +25,7 @@ exports.deleteHomework = (req, res, next) => {
         })
     })
     .catch(err => {
+        console.log(err)
         res.json({
             homeworkDeleted: false,
             errMsg: err
@@ -102,6 +104,30 @@ exports.removeLink = (req, res, next) => {
                 errMsg: err
             })
         })
+}
+
+exports.uploadSolution = (req, res, next) => {
+    let solution = {
+        studentId: req.body.studentId,
+        studentName: req.body.studentName,
+        solutionFile: req.file.filename
+    }
+    homeworkModel.uploadSolution(req.body.homeworkId, solution)
+    .then(() => {
+        res.json({
+            solution: solution
+        })
+    })
+    .catch(err => {
+        res.json({
+            errMsg: err
+        })
+    })
+}
+
+exports.downloadSolution = (req, res, next) => {
+    let filePath = path.join(__dirname, 'teachers', req.body.teacherId.toString(), req.body.courseName, 'homeworks', req.body.homeworkName, 'solutions', req.body.filename);
+    res.sendFile(filePath);
 }
 
 exports.getDiscussionComments = (req, res, next) => {
