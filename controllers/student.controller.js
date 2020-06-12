@@ -76,7 +76,6 @@ exports.changePassword = (req, res, next) => {
 exports.enrollCourse = (req, res, next) => {
     studentModel.enrollCourse(req.body.studentId, req.body.studentName, req.body.studentImage, req.body.courseCode)
         .then(course => {
-            console.log(course)
             res.json({
                 course: course
             })
@@ -89,7 +88,6 @@ exports.enrollCourse = (req, res, next) => {
 }
 
 exports.leaveCourse = (req, res, next) => {
-    console.log(req.body);
     studentModel.leaveCourse(req.body.student, req.body.course)
         .then(() => {
             res.json({

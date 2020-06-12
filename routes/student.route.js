@@ -43,7 +43,7 @@ router.post('/enroll-course',
             bodyParser.json(),
             studentController.enrollCourse)
 
-router.post('leave-course', 
+router.post('/leave-course', 
             authController.verifyToken,
             bodyParser.json(),
             studentController.leaveCourse)

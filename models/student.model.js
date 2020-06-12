@@ -149,12 +149,12 @@ exports.enrollCourse = async (studentId, studentName, studentImage, courseCode) 
 exports.leaveCourse = async (student, course) => {
     try {
         await mongoose.connect(DB_URL, {useNewUrlParser: true});
-        Student.findByIdAndUpdate(student.id, {
+        await Student.findByIdAndUpdate(student.id, {
             $pull: {
                 enrolledCourses: course
             }
         });
-        Course.findByIdAndUpdate(course.id, {
+        await Course.findByIdAndUpdate(course.id, {
             $pull: {
                 members: student
             }

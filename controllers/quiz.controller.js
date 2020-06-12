@@ -15,7 +15,7 @@ exports.newQuiz = (req, res, next) => {
 }
 
 exports.deleteQuiz = (req, res, next) => {
-    quizModel.deleteQuiz(req.body.quizId)
+    quizModel.deleteQuiz(req.body.courseId, req.body.quizId)
     .then(() => {
         res.json({
             quizDeleted: true

@@ -71,7 +71,8 @@ exports.deleteQuiz = async (courseId, quizId) => {
             $pull: {
                 quizes: {id: quizId}
             }
-        })
+        });
+        await gradeModel.Grade.deleteMany({quizId: quizId});
         mongoose.disconnect();
         return;
     } catch (error) {
@@ -104,14 +105,14 @@ exports.getStudentQuizQuestions = async (quizId, attendantStudent) => {
         let questions;
         await mongoose.connect(DB_URL, {useNewUrlParser: true});
         let quiz = await Quiz.findById(quizId);
-        if(quiz.attendants.filter(student => student.id === attendantStudent.id)[0]){
+        if(quiz.attendants.filter(student => student.studentId == attendantStudent.id)[0]){
             mongoose.disconnect();
             throw 'you can not complete the quiz';
         } 
         else {
             await Quiz.findByIdAndUpdate(quizId, {
                 $push: {
-                    attendants: attendantStudent
+                    attendants: {studentId: attendantStudent.id, studentName: attendantStudent.name}
                 }
             });
             questions = quiz.questions;
@@ -144,7 +145,7 @@ exports.finishQuiz = async (quiz, student, answers) => {
         let quizGrade = 0;
         for(let i=0; i<questions.length; i++){
             if(questions[i].trueAnswer === answers[i]){
-                quizGrade += questions[i].grade;
+                quizGrade += questions[i].grades;
             }
         }
         let studentGrade = {
@@ -157,7 +158,6 @@ exports.finishQuiz = async (quiz, student, answers) => {
         };
         let g = gradeModel.Grade(studentGrade);
         await g.save();
-        // let g = await gradeModel.newGrade(studentGrade);
         mongoose.disconnect();
         return g;
     } catch (error) {
