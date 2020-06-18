@@ -7,8 +7,8 @@ const authModel = require('../models/auth.model');
 let transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-      user: 'zoolz1029@gmail.com',
-      pass: 'qazxswedcvfrtgbnhyujmkiolp'
+      user: 'o.class.virtual.classroom@gmail.com',
+      pass: 'poi098)(*'
     }
   });
 
@@ -36,11 +36,16 @@ exports.verifyToken = (req,res,next) => {
 exports.postSignup = (req, res, next) => {
     //check if email is existed by sending a message to it
     
-    /*let mailOptions = {
-        from: 'zoolz1029@gmail.com',
+    let mailOptions = {
+        from: 'o.class.virtual.classroom@gmail.com',
         to: req.body.email,
         subject: 'Welcome in O-Class',
-        text: 'O-Class is a virtual class environment ........'
+        html: `<h1> O-Class Virtual Classroom </h1> 
+                <h2> O-Class is a web application that help teacher to create virtual classroom environment 
+                    to make education process easier, more efficiant and more entertaining </h2>
+                <h3> in O-Class in addition to virtual class environment, 
+                    we provide some articles that help teachers and students 
+                    how they can interact with E-Learning Effectively </h3>`
     };
     
     transporter.sendMail(mailOptions, function(error, info){
@@ -57,7 +62,7 @@ exports.postSignup = (req, res, next) => {
                 })
             }
         }
-    }); */
+    });
 
     // --------------------------------------
     
@@ -183,15 +188,15 @@ exports.adminLogin = (req, res, next) => {
         })
 }
 
-// exports.adminSignup = (req, res, next) => {
-//     authModel
-//         .adminSignup(req.body.adminName, req.body.password)
-//         .then(admin => {
-//             res.json({
-//                 admin
-//             })
-//         })
-// }
+exports.adminSignup = (req, res, next) => {
+    authModel
+        .adminSignup(req.body.adminName, req.body.password)
+        .then(admin => {
+            res.json({
+                admin
+            })
+        })
+}
 
 
 // ------------------reset password--------------------
@@ -211,7 +216,7 @@ exports.resetPassword = (req, res, next) => {
     let expiredDate = Date.now() + 3600000;
 
     let mailOptions = {
-        from: 'zoolz1029@gmail.com',
+        from: 'o.class.virtual.classroom@gmail.com',
         to: req.body.email,
         subject: 'Reset Password',
         text: `Reset Number is: ${resetNumber}`

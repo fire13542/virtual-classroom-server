@@ -5,7 +5,7 @@ mongoose.Promise = global.Promise;
 
 const bcrypt = require('bcryptjs');
 
-const DB_URL = 'mongodb://localhost:27017/virtual-classroom';
+const DB_URL = require('./db-url').DB_URL;
 
 const Student = require('./student.model').Student;
 const Teacher = require('./teacher.model').Teacher;
@@ -189,8 +189,11 @@ exports.adminSignup = (adminName, password) => {
         mongoose
         .connect(DB_URL)
         .then(() => {
+            return bcrypt.hash(password, 10);
+        })
+        .then((hashedPassword) => {
             let admin = new Admin({
-                adminName, password
+                adminName, password: hashedPassword
             })
             return admin.save();
         })
@@ -198,7 +201,7 @@ exports.adminSignup = (adminName, password) => {
             resolve(admin);
         })
         .catch(err => {
-            reject(admin);
+            reject(err);
         })
     })
 }

@@ -5,7 +5,6 @@ websiteUrl = 'http://localhost:3000/'
 exports.newBlog = (req, res, next) => {
     blogModel.newBlog(req.body.title, req.body.articleImage, req.body.metaTags, req.body.content)
         .then(blog => {
-            console.log(blog)
             res.json({
                 blogCreated: true,
                 blog: blog

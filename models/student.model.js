@@ -3,7 +3,7 @@ const bcrypt = require('bcryptjs');
 
 mongoose.Promise = global.Promise;
 
-const DB_URL = 'mongodb://localhost:27017/virtual-classroom';
+const DB_URL = require('./db-url').DB_URL;
 
 const studentSchema = mongoose.Schema({
     name: String,

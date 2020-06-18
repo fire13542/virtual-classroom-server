@@ -8,9 +8,9 @@ router.post('/login',
             bodyParser.json(), 
             authController.adminLogin);
 
-// router.post('/signup', 
-//             bodyParser.json, 
-//             authController.adminSignup);
+router.post('/signup', 
+            bodyParser.json(), 
+            authController.adminSignup);
 
 
 module.exports = router;

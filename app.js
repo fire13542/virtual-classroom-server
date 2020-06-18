@@ -4,7 +4,7 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const multer = require('multer');
 
-websiteUrl = 'http://localhost:3000/'
+API_UPL = "http://localhost:3000/"
 
 const authRouter = require('./routes/auth.route');
 const adminRouter = require('./routes/admin.route');
@@ -85,7 +85,7 @@ app.post('/upload-image',
         }).single("image"), 
         (req, res, next) => {
             res.json({
-                imageUrl: websiteUrl + 'blog-images/' + req.file.filename
+                imageUrl: API_UPL + 'blog-images/' + req.file.filename
             })
         })
 
