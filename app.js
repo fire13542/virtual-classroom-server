@@ -4,7 +4,7 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const multer = require('multer');
 
-API_UPL = "http://localhost:3000/"
+API_UPL = "https://o-class-virtual-classroom-api.herokuapp.com/"
 
 const authRouter = require('./routes/auth.route');
 const adminRouter = require('./routes/admin.route');
