@@ -57,7 +57,7 @@ exports.updateBlog = async (blogId, newTitle, newImageName, newContent) => {
 
 exports.deleteBlog = async (blogId) => {
     try {
-        await mongoose.connect();
+        await mongoose.connect(DB_URL);
         await Blog.findByIdAndDelete(blogId);
         mongoose.disconnect();
         return;

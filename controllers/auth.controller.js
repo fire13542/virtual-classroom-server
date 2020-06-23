@@ -69,8 +69,9 @@ exports.postSignup = (req, res, next) => {
     if(req.body.isStudent){
         authModel
             .createNewStudent(req.body.name, req.body.email, req.body.password)
-            .then(() => res.json({
-                signup: true
+            .then(student => res.json({
+                signup: true,
+                student: student
             }))
             .catch(err => res.json({
                 signup: false,
@@ -80,8 +81,9 @@ exports.postSignup = (req, res, next) => {
     else if(req.body.isTeacher){
         authModel
             .createNewTeacher(req.body.name, req.body.email, req.body.password)
-            .then(() => res.json({
-                signup: true
+            .then(teacher => res.json({
+                signup: true,
+                teacher: teacher
             }))
             .catch(err => res.json({
                 signup: false,

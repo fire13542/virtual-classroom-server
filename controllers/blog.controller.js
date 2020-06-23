@@ -1,7 +1,5 @@
 const blogModel = require('../models/blog.model');
 
-websiteUrl = 'http://localhost:3000/'
-
 exports.newBlog = (req, res, next) => {
     blogModel.newBlog(req.body.title, req.body.articleImage, req.body.metaTags, req.body.content)
         .then(blog => {
@@ -54,7 +52,6 @@ exports.getAllBlogs = (req, res, next) => {
 exports.getBlogContent = (req, res, next) => {
     blogModel.getBlogContent(req.params.blogId)
         .then(blog => {
-            blog.imageName = websiteUrl + 'blog-images/' + blog.imageName;
             res.json({
                 blog: blog
             })

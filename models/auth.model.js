@@ -34,9 +34,9 @@ exports.createNewStudent = (name, email, password) => {
                     password: hashedPassword
                 })
                 return student.save();
-            }).then(() => {
+            }).then(student => {
                 mongoose.disconnect();
-                resolve();
+                resolve(student);
             }).catch(err => {
                 mongoose.disconnect();
                 reject(err)
@@ -104,13 +104,13 @@ exports.createNewTeacher = (name, email, password) => {
             }).then(teacher => {
                 fileManager.createDir('./teachers/'+teacher._id)
                     .then(() => {
-                        resolve()
+                        return teacher;
                     })
                     .catch(() => reject());
             })
-            .then(() => {
+            .then(teacher => {
                 mongoose.disconnect();
-                resolve();
+                resolve(teacher);
             }).catch(err => {
                 mongoose.disconnect();
                 reject(err)
