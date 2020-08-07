@@ -30,11 +30,10 @@ router.post('/image',
                         cb(null, Date.now() + "-" + file.originalname);
                     }
                 })
-            }).single("avatar"),
+            }).single("image"),
             studentController.changeImage)
 
 router.put('/change-password', 
-            authController.verifyToken,
             bodyParser.json(),
             studentController.changePassword)
 

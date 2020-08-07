@@ -14,7 +14,7 @@ exports.getTeacherData = (req, res, next) => {
 
 exports.updateTeacher = (req, res, next) => {
     teacherModel
-            .updateTeacher(req.body.id, req.body.name, req.body.email)
+            .updateTeacher(req.body.teacherId, req.body.name, req.body.email)
             .then(teacher => res.json({
                 update: true,
                 teacher: teacher
@@ -41,7 +41,7 @@ exports.deleteTeacher = (req, res, next) => {
 }
 
 exports.changeImage = (req, res, next) => {
-    studentModel
+    teacherModel
         .changeImage(req.body.teacherId, req.file.filename)
         .then(() => {
             res.json({

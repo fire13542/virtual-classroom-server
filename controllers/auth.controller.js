@@ -69,10 +69,21 @@ exports.postSignup = (req, res, next) => {
     if(req.body.isStudent){
         authModel
             .createNewStudent(req.body.name, req.body.email, req.body.password)
-            .then(student => res.json({
-                signup: true,
-                student: student
-            }))
+            .then(student => {
+                let token = jwt.sign({studentId: student._id}, 'secret', {expiresIn : '12h'});
+                student.password = '';
+                let studentRes = {};
+                studentRes.student = student;
+                studentRes.token = token;
+                return studentRes;
+            })
+            .then(studentRes => {
+                res.json({
+                    signup: true,
+                    student: studentRes.student,
+                    token: studentRes.token
+                })
+            })
             .catch(err => res.json({
                 signup: false,
                 errMsg: err
@@ -81,10 +92,21 @@ exports.postSignup = (req, res, next) => {
     else if(req.body.isTeacher){
         authModel
             .createNewTeacher(req.body.name, req.body.email, req.body.password)
-            .then(teacher => res.json({
-                signup: true,
-                teacher: teacher
-            }))
+            .then(teacher => {
+                let token = jwt.sign({teacherId: teacher._id}, 'secret', {expiresIn : '12h'});
+                teacher.password = '';
+                let teacherRes = {};
+                teacherRes.teacher = teacher;
+                teacherRes.token = token;
+                return teacherRes;
+            })
+            .then(teacherRes => {
+                res.json({
+                    signup: true,
+                    teacher: teacherRes.teacher,
+                    token: teacherRes.token
+                })
+            })
             .catch(err => res.json({
                 signup: false,
                 errMsg: err
@@ -209,22 +231,22 @@ exports.resetPassword = (req, res, next) => {
             errMsg: 'this email is not registered'
         })
         return;
-    }
+    } 
+    else {
+        let resetNumber = randomString.generate({
+            length: 5,
+            charset: 'numeric'
+        });
+        let expiredDate = Date.now() + 3600000;
 
-    let resetNumber = randomString.generate({
-                        length: 5,
-                        charset: 'numeric'
-                    });
-    let expiredDate = Date.now() + 3600000;
+        let mailOptions = {
+            from: 'o.class.virtual.classroom@gmail.com',
+            to: req.body.email,
+            subject: 'Reset Password',
+            text: `Reset Number is: ${resetNumber}`
+        };
 
-    let mailOptions = {
-        from: 'o.class.virtual.classroom@gmail.com',
-        to: req.body.email,
-        subject: 'Reset Password',
-        text: `Reset Number is: ${resetNumber}`
-    };
-    
-    transporter.sendMail(mailOptions, function(error, info){
+        transporter.sendMail(mailOptions, function(error, info){
         if(error) {
             res.json({
                 reset: false,
@@ -243,5 +265,6 @@ exports.resetPassword = (req, res, next) => {
                 expiredDate: expiredDate
             })
         }
-    }); 
+        }); 
+    }
 }

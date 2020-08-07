@@ -45,7 +45,7 @@ exports.updateTeacher = (id, name, email) => {
         mongoose
         .connect(DB_URL, {useNewUrlParser: true, useUnifiedTopology: true})
         .then(() => {
-            return Teacher.findByIdAndUpdate(id, {
+            return Teacher.findOneAndUpdate({_id: id}, {
                 name: name, 
                 email: email
             })
@@ -53,6 +53,7 @@ exports.updateTeacher = (id, name, email) => {
         .then(teacher => {
             if(teacher){
                 mongoose.disconnect();
+                teacher.password = '';
                 resolve(teacher);
             }
             else {reject('there is no teacher match this id')}

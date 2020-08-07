@@ -34,7 +34,7 @@ exports.getMessageById = async id => {
 
 exports.getMessagesBelongPerson = async (person) => {
     try {
-        mongoose.connect(DB_URL);
+        await mongoose.connect(DB_URL);
         let messages = await Message.find({$or: [{sender: person}, {reciever: person}]});
         mongoose.disconnect();
         return messages;
@@ -68,7 +68,7 @@ exports.getMessagesBetweenSenderAndReciever = async (sender, reciever) => {
 
 exports.sendMessage = async messageData => {
     try {
-        await mongoose.connect(DB_URL, {useUnifiedTopology: true});
+        await mongoose.connect(DB_URL, {useNewUrlParser: true, useUnifiedTopology: true});
         let message = new Message(messageData);
         let m = await message.save();
         mongoose.disconnect();

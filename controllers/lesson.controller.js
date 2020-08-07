@@ -45,6 +45,37 @@ exports.getLessonById = (req, res, next) => {
     })
 }
 
+exports.addScreen = (req, res, next) => {
+    lessonModel.addScreen(req.body.lessonId, req.file.filename)
+        .then(() => {
+            res.json({
+                screenAdded: true,
+                screenName: req.file.filename
+            });
+        })
+        .catch(err => {
+            res.json({
+                error: true,
+                errMsg: err
+            })
+        })
+}
+
+exports.deleteScreen = (req, res, next) => {
+    lessonModel.deleteScreen(req.body.lessonData, req.body.screenName)
+        .then(() => {
+            res.json({
+                screenDeleted: true
+            });
+        })
+        .catch(err => {
+            res.json({
+                screenDeleted: false,
+                errMsg: err
+            });
+        })
+}
+
 exports.uploadFile = (req, res, next) => {
     lessonModel.uploadFile(req.body.lessonId, req.file.filename)
         .then(() => {

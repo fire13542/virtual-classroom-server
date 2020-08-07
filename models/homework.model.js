@@ -102,7 +102,7 @@ exports.addLink = async (homeworkId, link) => {
             }
         });
         mongoose.disconnect();
-        return;
+        return link;
     } catch (error) {
         mongoose.disconnect();
         throw new Error(error);

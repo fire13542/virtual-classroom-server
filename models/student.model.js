@@ -44,7 +44,7 @@ exports.updateStudent = (id, name, email) => {
         mongoose
             .connect(DB_URL, {useNewUrlParser: true, useUnifiedTopology: true})
             .then(() => {
-                return Student.findByIdAndUpdate(id, {
+                return Student.findOneAndUpdate({_id: id}, {
                     name: name, 
                     email: email
                 })
@@ -52,6 +52,7 @@ exports.updateStudent = (id, name, email) => {
             .then(student => {
                 if(student){
                     mongoose.disconnect();
+                    student.password = '';
                     resolve(student);
                 }
                 else {reject('there is no student match this id')}
@@ -90,12 +91,13 @@ exports.changeImage = async (studentId, image) => {
         });
         await Course.updateMany({'members.id': studentId},{
             $set: {
-                'members.$.image': imageName
+                'members.$[].image': image
             }
         });
         mongoose.disconnect();
         return;
     } catch (error) {
+        console.log(error)
         mongoose.disconnect();
         throw new Error(error);
     }

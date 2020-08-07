@@ -92,6 +92,37 @@ exports.getLessonById = async id => {
     }
 }
 
+exports.addScreen = async (lessonId, screenName) => {
+    try {
+        await mongoose.connect(DB_URL, {useNewUrlParser: true});
+        await Lesson.findByIdAndUpdate(lessonId, {
+            screen: screenName
+        });
+        mongoose.disconnect();
+        return;
+    } catch (error) {
+        mongoose.disconnect();
+        throw new Error(error);
+    }
+}
+
+exports.deleteScreen = async (lessonData, screenName) => {
+    try {
+        await mongoose.connect(DB_URL, {useNewUrlParser: true});
+        await Lesson.findByIdAndUpdate(lessonData.lessonId, {
+            screen: ''
+        });
+        
+        await fileManager.removeFile('./teachers/'+lessonData.teacherId+'/'+lessonData.courseName+'/'+lessonData.lessonName+'/'+screenName)
+        
+        mongoose.disconnect();
+        return;
+    } catch (error) {
+        mongoose.disconnect();
+        throw new Error(error);
+    }
+}
+
 exports.addLink = async (lessonId, link) => {
     try {
         await mongoose.connect(DB_URL, {useNewUrlParser: true});

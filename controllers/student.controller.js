@@ -14,7 +14,7 @@ exports.getStudentData = (req, res, next) => {
 
 exports.updateStudent = (req, res, next) => {
     studentModel
-            .updateStudent(req.body.id, req.body.name, req.body.email)
+            .updateStudent(req.body.studentId, req.body.name, req.body.email)
             .then(student => res.json({
                 update: true,
                 student: student

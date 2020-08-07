@@ -39,10 +39,9 @@ router.post('/image',
                     }
                 })
             }).single("image"),
-            studentController.changeImage)
+            teacherController.changeImage)
 
 router.put('/change-password', 
-            authController.verifyToken,
             bodyParser.json(),
             teacherController.changePassword);
 

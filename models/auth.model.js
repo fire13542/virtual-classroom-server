@@ -207,7 +207,7 @@ exports.adminSignup = (adminName, password) => {
 }
 
 exports.checkIfEamilExisted = async (character, email) => {
-    await mongoose.connect();
+    await mongoose.connect(DB_URL);
     if(character === 'student'){
         let student = await Student.findOne({email: email});
         mongoose.disconnect();
