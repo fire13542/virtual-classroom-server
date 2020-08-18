@@ -1,2 +1,2 @@
-// exports.DB_URL = 'mongodb+srv://o-class:OClassVirtualClassroom@cluster0.ikhs9.mongodb.net/oclass?retryWrites=true&w=majority';
-exports.DB_URL = 'mongodb://localhost:27017/virtual-classroom?retryWrites=true&w=majority';
+exports.DB_URL = 'mongodb+srv://o-class:OClassVirtualClassroom@cluster0.ikhs9.mongodb.net/oclass?retryWrites=true&w=majority';
+// exports.DB_URL = 'mongodb://localhost:27017/virtual-classroom?retryWrites=true&w=majority';

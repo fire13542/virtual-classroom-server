@@ -8,7 +8,7 @@ let transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
       user: 'o.class.virtual.classroom@gmail.com',
-      pass: 'poi098)(*'
+      pass: 'poiu0987)(*&'
     }
   });
 
