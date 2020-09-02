@@ -250,7 +250,7 @@ exports.resetPassword = (req, res, next) => {
         if(error) {
             res.json({
                 reset: false,
-                errMsg: 'this email can not recieve our message 1'
+                errMsg: 'this email can not recieve our message'
             })
         } else if(!info.accepted.includes(req.body.email)){
             res.json({
