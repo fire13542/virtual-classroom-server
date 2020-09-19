@@ -8,9 +8,9 @@ module.exports = io => {
         socket.on("joinHomeworkRoom", (homeworkId) => {
             socket.join(homeworkId);
         });
-        socket.on('video', (stream) => {
-            console.log(stream)
-        });
+        // socket.on('video', (stream) => {
+        //     console.log(stream)
+        // });
         // roomId: either (lessonId) OR (homeworkId)
         socket.on('newComment', ({roomId, comment}) => {
             commentModel.newComment(comment)
