@@ -1,5 +1,0 @@
-1) search about any NLP project
-2) summarize your search in powerpoint representation
-3) compress powerpoint file with your references
-4) upload your search before end of homework date
-
