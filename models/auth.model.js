@@ -101,12 +101,11 @@ exports.createNewTeacher = (name, email, password) => {
                     password: hashedPassword
                 })
                 return teacher.save();
-            }).then(teacher => {
-                fileManager.createDir('./teachers/'+teacher._id)
-                    .then(() => {
-                        return teacher;
-                    })
+            }).then(async(teacher) => {
+                await fileManager.createDir('./teachers/'+teacher._id)
+                    .then(() => {})
                     .catch(() => reject());
+                return teacher;
             })
             .then(teacher => {
                 mongoose.disconnect();

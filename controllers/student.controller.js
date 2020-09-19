@@ -28,16 +28,18 @@ exports.updateStudent = (req, res, next) => {
 
 exports.deleteStudent = (req, res, next) => {
     studentModel
-            .deleteStudent(req.body.studentId)
+            .deleteStudent(req.body.student)
             .then(() => res.json({
                     delete: true
                 })
             )
-            .catch(err => res.json({
+            .catch(err => 
+                {console.log(err)
+                res.json({
                     delete: false,
                     errMsg: err
                 })
-            )
+            })
 }
 
 exports.changeImage = (req, res, next) => {

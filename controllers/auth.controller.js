@@ -84,10 +84,13 @@ exports.postSignup = (req, res, next) => {
                     token: studentRes.token
                 })
             })
-            .catch(err => res.json({
-                signup: false,
-                errMsg: err
-            }));
+            .catch(err => {
+                console.log(err)
+                res.json({
+                    signup: false,
+                    errMsg: err
+                })
+            });
     }
     else if(req.body.isTeacher){
         authModel
@@ -107,10 +110,12 @@ exports.postSignup = (req, res, next) => {
                     token: teacherRes.token
                 })
             })
-            .catch(err => res.json({
-                signup: false,
-                errMsg: err
-            }));
+            .catch(err => {
+                res.json({
+                    signup: false,
+                    errMsg: err
+                })
+        });
     }
 }
 

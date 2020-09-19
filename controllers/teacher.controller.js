@@ -28,7 +28,7 @@ exports.updateTeacher = (req, res, next) => {
 
 exports.deleteTeacher = (req, res, next) => {
     teacherModel
-            .deleteTeacher(req.body.id)
+            .deleteTeacher(req.body.teacher)
             .then(() => res.json({
                     delete: true
                 })

@@ -64,12 +64,12 @@ exports.updateStudent = (id, name, email) => {
     })
 }
 
-exports.deleteStudent = async (id) => {
+exports.deleteStudent = async (student) => {
     try {
         await mongoose.connect(DB_URL, {useNewUrlParser: true});
-        let student = Student.findByIdAndDelete(id);
+        await Student.findByIdAndDelete(student._id);
         for(let course of student.enrolledCourses){
-            Course.findByIdAndUpdate(course.id, {
+            await Course.findByIdAndUpdate(course.id, {
                 $pull: {
                     members: {id: student._id, name: student.name, image: student.image}
                 }

@@ -65,16 +65,20 @@ exports.updateTeacher = (id, name, email) => {
     })
 }
 
-exports.deleteTeacher = async (id) => {
+exports.deleteTeacher = async (teacher) => {
     try {
         await mongoose.connect(DB_URL, {useNewUrlParser: true});
-        let teacher = Teacher.findByIdAndDelete(id);
+        await Teacher.findByIdAndDelete(teacher._id);
         for(let course of teacher.createdCourses){
-            Course.findByIdAndDelete(course.id);
+            await Course.findByIdAndDelete(course.id);
+        await Student.updateMany(null, 
+            { $pull: { enrolledCourses: {id: course.id} } });
         }
-        Student.updateMany()
+        mongoose.disconnect()
+        return
     } catch (error) {
-        
+        mongoose.disconnect();
+        throw new Error(error);
     }
 }
 
